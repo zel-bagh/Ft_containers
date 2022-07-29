@@ -24,17 +24,18 @@ class RBT
         {
             public:
                 pointer                 pair;
-                bool                    is_root;
                 bool                    is_black;
                 RBTNode*                right_child;
                 RBTNode*                left_child;
                 RBTNode*                parent;
             public:
-                RBTNode(const reference pair)
+                RBTNode(const reference p, RBTNode& prt, bool color) : is_black(color), parent(&prt)
                 {
                     Alloc allocator;
                     this->pair = allocator.allocate(1);
                     this->pair[0] = pair;
+                    right_child = NULL;
+                    left_child = NULL;
                 }
                 RBTNode(const RBTNode& obj) {*this = obj;}
                 ~RBTNode()
@@ -55,7 +56,7 @@ class RBT
                 RBTNode* node;
             public:
                 iterator(void) {node = NULL;}
-                iterator(const RBTNode& obj){node = &obj};
+                iterator(const RBTNode& obj){node = &obj;}
                 iterator(const iterator& obj) {*this = obj;}
                 ~iterator(void){}
             public:
@@ -70,41 +71,33 @@ class RBT
     public:
         std::pair<iterator, bool> insert(const std::pair<const Key, T>& pair);
     private:
+        void two_adjacent_red_nodes_fixing(RBTNode* node);
+    private:
         RBTNode* root_node;
 };
 
 template <class Key, class T, class Key_Compare, class Alloc>
 std::pair<typename RBT<Key, T, Key_Compare, Alloc>::iterator, bool> RBT<Key, T, Key_Compare, Alloc>::insert(const std::pair<const Key, T>& pair)
 {
-    bool       r;
     value_type pr;
     RBTNode    *node;
     Key_Compare compare;
-    iterator    it;
-    std::pair<iterator, bool> return_value;
 
     pr.first = pair.first;
     pr.second = pair.second;
     if (root_node == NULL) // create root node
-    {
-        root_node = new RBTNode(pr);
-        root_node->is_black = 1;
-        root_node->is_root = 1;
-        root_node->left_child = NULL;
-        root_node->right_child = NULL;
-        root_node->parent = NULL;
-    }
+        root_node = new RBTNode(pr, 0, 1);
     else
     {
         node = root_node;
         while (1)
         {
-            r = compare(pr.first, node->pair->first);
             if (compare(pr.first, node->pair->first) == 1)
             {
                 if (node->left_child == NULL)
                 {
-                    node->left_child = new RBTNode(pr);
+                    node->left_child = new RBTNode(pr, *node, 0);
+                    node = node->left_child;
                     break ;
                 }
                     node = node->left_child;
@@ -113,7 +106,8 @@ std::pair<typename RBT<Key, T, Key_Compare, Alloc>::iterator, bool> RBT<Key, T, 
             {
                 if (node->right_child == NULL)
                 {
-                    node->right_child = new RBTNode(pr);
+                    node->right_child = new RBTNode(pr, *node, 0);
+                    node = node->right_child;
                     break ;
                 }
                     node = node->right_child;  
@@ -121,9 +115,102 @@ std::pair<typename RBT<Key, T, Key_Compare, Alloc>::iterator, bool> RBT<Key, T, 
             else
                 return (std::pair<iterator, bool> (iterator(*node), 0));
         }
-        
+        if (node->parent->is_black)
+            return (std::pair<iterator, bool> (iterator(*node), 1));
+        two_adjacent_red_nodes_fixing(node);
     }
-} 
+}
+template <class Key, class T, class Key_Compare, class Alloc>
+void RBT<Key, T, Key_Compare, Alloc>::two_adjacent_red_nodes_fixing(RBTNode* node)
+{
+    if (node->parent->parent->left_child == node->parent)
+    {
+        if (node->parent->parent->right_child && !node->parent->parent->right_child->is_black)
+        {
+            node->parent->parent->right_child->is_black = 1;
+            node->parent->is_black = 1;
+            if (node->parent->parent->parent == NULL)
+                return ;
+            node->parent->parent->is_black = 0;
+            if (!node->parent->parent->parent->is_black)
+                two_adjacent_red_nodes_fixing(node->parent->parent);
+            return ;
+        }
+        else if (node->parent->left_child == node)
+        {
+            node->parent->parent->left_child = node->parent->right_child;
+            if (node->parent->right_child)
+                node->parent->right_child->parent = node->parent->parent;
+            node->parent->parent->is_black = 0;
+            node->parent->right_child = node->parent->parent;
+            node->parent->is_black = 1;
+            node->parent->parent = node->parent->parent->parent;
+            node->parent->right_child->parent = node->parent;
+            return ;
+        }
+        else
+        {
+            node->parent->parent->left_child = node->right_child;
+            if (node->right_child)
+                node->right_child->parent = node->parent->parent;
+            node->parent->parent->is_black = 0;
+            node->parent->right_child = node->left_child;
+            if (node->left_child)
+                node->left_child->parent = node->parent;
+            node->is_black = 1;
+            node->right_child = node->parent->parent;
+            node->left_child = node->parent;
+            node->left_child->parent = node;
+            node->parent = node->right_child->parent;
+            node->right_child->parent = node;
+            return ;
+        }
+    }
+    else
+    {
+        if (node->parent->parent->left_child && !node->parent->parent->left_child->is_black)
+        {
+            node->parent->parent->left_child->is_black = 1;
+            node->parent->is_black = 1;
+            if (node->parent->parent->parent == NULL)
+                return ;
+            node->parent->parent->is_black = 0;
+            if (!node->parent->parent->parent->is_black)
+                two_adjacent_red_nodes_fixing(node->parent->parent);
+            return ;
+        }
+        else if (node->parent->right_child == node)
+        {
+            node->parent->parent->right_child = node->parent->left_child;
+            if (node->parent->left_child)
+                node->parent->left_child->parent = node->parent->parent;
+            node->parent->parent->is_black = 0;
+            node->parent->left_child = node->parent->parent;
+            node->parent->is_black = 1;
+            node->parent->parent = node->parent->parent->parent;
+            node->parent->left_child->parent = node->parent;
+            return ;
+        }
+        else
+        {
+            node->parent->parent->right_child = node->left_child;
+            if (node->left_child)
+                node->left_child->parent = node->parent->parent;
+            node->parent->parent->is_black = 0;
+            node->parent->left_child = node->right_child;
+            if (node->right_child)
+                node->right_child->parent = node->parent;
+            node->is_black = 1;
+            node->left_child = node->parent->parent;
+            node->right_child = node->parent;
+            node->right_child->parent = node;
+            node->parent = node->left_child->parent;
+            node->left_child->parent = node;
+            return ;
+        }
+    }
+}
+
 
 
 

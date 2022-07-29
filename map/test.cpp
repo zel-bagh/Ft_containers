@@ -2,7 +2,7 @@
 #include<iostream>
 #include<map>
 #include"test.hpp"
-// #include"RedBlackTree.hpp"
+#include"RedBlackTree.hpp"
 
 
 int main()
