@@ -70,8 +70,10 @@ class RBT
         };
     public:
         std::pair<iterator, bool> insert(const std::pair<const Key, T>& pair);
+        void erase(const Key& k);
     private:
         void two_adjacent_red_nodes_fixing(RBTNode* node);
+        void black_node_missing_fixing(RBTNode* node, bool erase);
     private:
         RBTNode* root_node;
 };
@@ -110,7 +112,7 @@ std::pair<typename RBT<Key, T, Key_Compare, Alloc>::iterator, bool> RBT<Key, T, 
                     node = node->right_child;
                     break ;
                 }
-                    node = node->right_child;  
+                    node = node->right_child;
             }
             else
                 return (std::pair<iterator, bool> (iterator(*node), 0));
@@ -118,6 +120,7 @@ std::pair<typename RBT<Key, T, Key_Compare, Alloc>::iterator, bool> RBT<Key, T, 
         if (node->parent->is_black)
             return (std::pair<iterator, bool> (iterator(*node), 1));
         two_adjacent_red_nodes_fixing(node);
+        return (std::pair<iterator, bool> (iterator(*node), 1));
     }
 }
 template <class Key, class T, class Key_Compare, class Alloc>
@@ -211,7 +214,56 @@ void RBT<Key, T, Key_Compare, Alloc>::two_adjacent_red_nodes_fixing(RBTNode* nod
     }
 }
 
-
+template <class Key, class T, class Key_Compare, class Alloc>
+void RBT<Key, T, Key_Compare, Alloc>::erase(const Key& k)
+{
+    Key_Compare compare;
+    RBTNode node = root_node;
+    RBTNode rnode;
+    if (!node)
+        return;
+    while (compare(k, node->pair->first) || compare(node->pair->first, k))
+    {
+        node = (compare(k, node->pair->first))? node->left_child : node->right_child;
+        if (!node)
+            return;
+    }
+    if (!node->right_child && !node->left_child)
+    {
+        if (!node->is_black)
+        {
+            if (node->parent->left_child == node)
+                node->parent->left_child = NULL;
+            else
+                node->parent->right_child = NULL;
+            delete node;
+            return;
+        }
+        if (!node.parent)
+        {
+            root_node == NULL;
+            delete node;
+            return;
+        }
+        black_node_missing_fixing(node, 1);
+        return;
+    }
+    else if (node->right_child && node->left_child)
+    {
+        rnode = node->right_child;
+        while (rnode->left_child)
+            rnode = rnode->left_child;
+        if (rnode)
+    }
+    else
+    {
+        *(node->pair) = (node->right_child)? *(node->right_child->pair) : *(node->left_child->pair);
+        if (node->right_child)
+            delete node->right_child;
+        else
+            delete node->left_child;
+    }
+}
 
 
 

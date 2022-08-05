@@ -8,6 +8,8 @@
 int main()
 {
     std::map<int, int> maap;
+    std::map<int, int>::iterator a = maap.begin();
 
+    a.
 
 }
