@@ -74,6 +74,8 @@ class RBT
     private:
         void two_adjacent_red_nodes_fixing(RBTNode* node);
         void black_node_missing_fixing(RBTNode* node, bool erase);
+        void erase_rednode_nochildren(RBTNode* node);
+        void erase_balcknode_oneredchildren(RBTNode* node);
     private:
         RBTNode* root_node;
 };
@@ -215,6 +217,62 @@ void RBT<Key, T, Key_Compare, Alloc>::two_adjacent_red_nodes_fixing(RBTNode* nod
 }
 
 template <class Key, class T, class Key_Compare, class Alloc>
+void RBT<Key, T, Key_Compare, Alloc>::erase_rednode_nochildren(RBTNode* node)
+{
+    if (node->parent->left_child == node)
+        node->parent->left_child = NULL;
+    else
+        node->parent->right_child = NULL;
+    delete node;
+}
+
+
+template <class Key, class T, class Key_Compare, class Alloc>
+void RBT<Key, T, Key_Compare, Alloc>::erase_balcknode_oneredchildren(RBTNode* node)
+{
+    *(node->pair) = (node->right_child)? *(node->right_child->pair) : *(node->left_child->pair);
+    if (node->right_child)
+    {
+        delete node->right_child;
+        node->right_child = NULL;
+    }
+    else
+    {
+        delete node->left_child;
+        node->left_child = NULL;
+    }
+}
+
+template <class Key, class T, class Key_Compare, class Alloc>
+void RBT<Key, T, Key_Compare, Alloc>::black_node_missing_fixing(RBTNode* node, bool erase)
+{
+    RBTNode *parent;
+
+    parent = node->parent;
+    if (parent->left_child == node)
+    {
+        if (parent->right_child->is_black)
+        {
+            if ((parent->right_child->left_child && parent->right_child->left_child->is_black && parent->right_child->right_child && parent->right_child->right_child->is_black)
+            ||(!parent->right_child->left_child && !parent->right_child->right_child))
+            {
+                parent->right_child->is_black = 0;
+                if (erase)
+                {
+                    parent->left_child = NULL;
+                    delete (node);
+                }
+                if (parent->is_black)
+                    black_node_missing_fixing(parent, 0);
+                else
+                    parent->is_black = 1;
+                return ; 
+            }
+        }
+    }
+}
+
+template <class Key, class T, class Key_Compare, class Alloc>
 void RBT<Key, T, Key_Compare, Alloc>::erase(const Key& k)
 {
     Key_Compare compare;
@@ -231,38 +289,30 @@ void RBT<Key, T, Key_Compare, Alloc>::erase(const Key& k)
     if (!node->right_child && !node->left_child)
     {
         if (!node->is_black)
-        {
-            if (node->parent->left_child == node)
-                node->parent->left_child = NULL;
-            else
-                node->parent->right_child = NULL;
-            delete node;
-            return;
-        }
-        if (!node.parent)
+            erase_rednode_nochildren(node);
+        else if (!node.parent)
         {
             root_node == NULL;
             delete node;
-            return;
         }
-        black_node_missing_fixing(node, 1);
-        return;
+        else
+            black_node_missing_fixing(node, 1);
     }
     else if (node->right_child && node->left_child)
     {
         rnode = node->right_child;
         while (rnode->left_child)
             rnode = rnode->left_child;
-        if (rnode)
+        *(node->pair) = *(rnode->pair);
+        if (!rnode->is_black)   
+            erase_rednode_nochildren(rnode);
+        else if (rnode->right_child)
+            erase_balcknode_oneredchildren(rnode);
+        else
+            black_node_missing_fixing(rnode, 1);
     }
     else
-    {
-        *(node->pair) = (node->right_child)? *(node->right_child->pair) : *(node->left_child->pair);
-        if (node->right_child)
-            delete node->right_child;
-        else
-            delete node->left_child;
-    }
+        erase_balcknode_oneredchildren(node);
 }
 
 
