@@ -262,12 +262,44 @@ void RBT<Key, T, Key_Compare, Alloc>::black_node_missing_fixing(RBTNode* node, b
                     parent->left_child = NULL;
                     delete (node);
                 }
-                if (parent->is_black)
+                if (parent->is_black && parent->parent)
                     black_node_missing_fixing(parent, 0);
                 else
-                    parent->is_black = 1;
-                return ; 
+                    parent->is_black = 1; 
             }
+            else if (parent->right_child->right_child && !parent->right_child->right_child->is_black)
+            {
+                parent->right_child->is_black = parent->is_black;
+                parent->is_black = 1;
+                parent->right_child->parent = parent->parent;
+                if (parent->parent)
+                {
+                    if (parent->parent->right_child == parent)
+                        parent->parent->right_child = parent->right_child;
+                    else
+                        parent->parent->left_child = parent->right_child;
+                }
+                parent->parent = parent->right_child;
+                parent->right_child = parent->right_child->left_child;
+                parent->parent->left_child = parent;
+                if (parent->right_child)
+                    parent->right_child->parent = parent;
+                parent->parent->right_child->is_black = 1;
+                if (erase) 
+                {
+                    parent->left_child = NULL;
+                    delete node;
+                }
+            }
+            else if (parent->right_child->left_child && !parent->right_child->left_child->is_black &&
+                (!parent->right_child->right_child || (parent->right_child->right_child && parent->right_child->right_child->is_black)))
+            {
+                parent->right_child->left_child->is_black = 1;
+                parent->right_child->is_black = 0;
+                parent->right_child->left_child->parent = parent;
+                parent->right_child->parent = parent->right_child->left_child;
+            }
+
         }
     }
 }
