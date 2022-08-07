@@ -298,8 +298,13 @@ void RBT<Key, T, Key_Compare, Alloc>::black_node_missing_fixing(RBTNode* node, b
                 parent->right_child->is_black = 0;
                 parent->right_child->left_child->parent = parent;
                 parent->right_child->parent = parent->right_child->left_child;
+                parent->right_child->left_child = parent->right_child->left_child->right_child;
+                if (parent->right_child->left_child)
+                    parent->right_child->left_child->parent = parent->right_child;
+                parent->right_child->parent->right_child = parent->right_child;
+                parent->right_child = parent->right_child->parent;
+                black_node_missing_fixing(node, 0);
             }
-
         }
     }
 }
