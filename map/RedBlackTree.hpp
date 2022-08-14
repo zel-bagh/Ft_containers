@@ -8,7 +8,7 @@ class RBT
     public:
         typedef typename Alloc::reference   reference;
         typedef typename Alloc::pointer     pointer;
-        typedef typename Alloc::_Tp         value_type;
+        typedef typename Alloc::value_type         value_type;
     public:
         RBT(void) {root_node = NULL;}
         RBT(const RBT& obj) {*this = obj;} // should copy
@@ -25,15 +25,17 @@ class RBT
             public:
                 pointer                 pair;
                 bool                    is_black;
+                bool                    is_begin;
+                bool                    is_end;
                 RBTNode*                right_child;
                 RBTNode*                left_child;
                 RBTNode*                parent;
             public:
-                RBTNode(const reference p, RBTNode& prt, bool color) : is_black(color), parent(&prt)
+                RBTNode(const reference p, RBTNode* prt, bool color) : is_black(color), parent(prt)
                 {
                     Alloc allocator;
-                    this->pair = allocator.allocate(1);
-                    this->pair[0] = pair;
+                    pair = allocator.allocate(1);
+                    *pair = p;
                     right_child = NULL;
                     left_child = NULL;
                 }
@@ -56,17 +58,67 @@ class RBT
                 RBTNode* node;
             public:
                 iterator(void) {node = NULL;}
-                iterator(const RBTNode& obj){node = &obj;}
+                iterator(RBTNode& obj){node = &obj;}
                 iterator(const iterator& obj) {*this = obj;}
                 ~iterator(void){}
             public:
-                const reference   operator=(const iterator& obj)
+                const iterator&   operator=(const iterator& obj)
                 {
                     node = obj.node;
                     return    *this;
                 }
-                reference   operator->(void) {return (*(node->pair));}
+                pointer     operator->(void) {return (node->pair);}
                 reference   operator*(void) {return (*(node->pair));}
+                iterator    operator++(void)
+                {
+                    if (node->right_child)
+                    {
+                        node = node->right_child;
+                        while (node->left_child)
+                            node = node->left_child;
+                    }
+                    else if (node->parent)
+                    {
+                        if (node->parent->left_child == node)
+                            node = node->parent;
+                        else if (node->is_end)
+                            node = NULL;
+                        else
+                        {
+                            while (node->parent->right_child == node)
+                                node = node->parent;
+                            node = node->parent;
+                        }
+                    }
+                    else
+                        node = NULL;
+                    return ;
+                }
+                iterator    operator--(void)
+                {
+                    if (node->right_child)
+                    {
+                        node = node->right_child;
+                        while (node->left_child)
+                            node = node->left_child;
+                    }
+                    else if (node->parent)
+                    {
+                        if (node->parent->left_child == node)
+                            node = node->parent;
+                        else if (node->is_end)
+                            node = NULL;
+                        else
+                        {
+                            while (node->parent->right_child == node)
+                                node = node->parent;
+                            node = node->parent;
+                        }
+                    }
+                    else
+                        node = NULL;
+                    return ;
+                }
         };
     public:
         std::pair<iterator, bool> insert(const std::pair<const Key, T>& pair);
@@ -75,8 +127,8 @@ class RBT
         void two_adjacent_red_nodes_fixing(RBTNode* node);
         void black_node_missing_fixing(RBTNode* node, bool erase);
         void erase_rednode_nochildren(RBTNode* node);
-        void erase_balcknode_oneredchildren(RBTNode* node);
-    private:
+        void erase_blacknode_oneredchildren(RBTNode* node);
+    public:
         RBTNode* root_node;
 };
 
@@ -89,8 +141,11 @@ std::pair<typename RBT<Key, T, Key_Compare, Alloc>::iterator, bool> RBT<Key, T, 
 
     pr.first = pair.first;
     pr.second = pair.second;
-    if (root_node == NULL) // create root node
+    if (root_node == NULL)
+    {// create root node
         root_node = new RBTNode(pr, 0, 1);
+        return (std::pair<iterator, bool> (iterator(*root_node), 1));
+    }
     else
     {
         node = root_node;
@@ -100,7 +155,7 @@ std::pair<typename RBT<Key, T, Key_Compare, Alloc>::iterator, bool> RBT<Key, T, 
             {
                 if (node->left_child == NULL)
                 {
-                    node->left_child = new RBTNode(pr, *node, 0);
+                    node->left_child = new RBTNode(pr, node, 0);
                     node = node->left_child;
                     break ;
                 }
@@ -110,7 +165,7 @@ std::pair<typename RBT<Key, T, Key_Compare, Alloc>::iterator, bool> RBT<Key, T, 
             {
                 if (node->right_child == NULL)
                 {
-                    node->right_child = new RBTNode(pr, *node, 0);
+                    node->right_child = new RBTNode(pr, node, 0);
                     node = node->right_child;
                     break ;
                 }
@@ -150,7 +205,16 @@ void RBT<Key, T, Key_Compare, Alloc>::two_adjacent_red_nodes_fixing(RBTNode* nod
             node->parent->right_child = node->parent->parent;
             node->parent->is_black = 1;
             node->parent->parent = node->parent->parent->parent;
+            if (node->parent->parent == NULL)
+                root_node = node->parent;
             node->parent->right_child->parent = node->parent;
+            if (node->parent->parent)
+            {
+                if (node->parent->parent->left_child == node->parent->right_child)
+                    node->parent->parent->left_child = node->parent;
+                else
+                    node->parent->parent->right_child = node->parent;
+            }
             return ;
         }
         else
@@ -167,7 +231,16 @@ void RBT<Key, T, Key_Compare, Alloc>::two_adjacent_red_nodes_fixing(RBTNode* nod
             node->left_child = node->parent;
             node->left_child->parent = node;
             node->parent = node->right_child->parent;
+            if (node->parent == NULL)
+                root_node = node;
             node->right_child->parent = node;
+            if (node->parent)
+            {
+                if (node->parent->left_child == node->right_child)
+                    node->parent->left_child = node;
+                else
+                    node->parent->right_child = node;
+            }
             return ;
         }
     }
@@ -193,7 +266,16 @@ void RBT<Key, T, Key_Compare, Alloc>::two_adjacent_red_nodes_fixing(RBTNode* nod
             node->parent->left_child = node->parent->parent;
             node->parent->is_black = 1;
             node->parent->parent = node->parent->parent->parent;
+            if (node->parent->parent == NULL)
+                root_node = node->parent;
             node->parent->left_child->parent = node->parent;
+            if (node->parent->parent)
+            {
+                if (node->parent->parent->left_child == node->parent->left_child)
+                    node->parent->parent->left_child = node->parent;
+                else
+                    node->parent->parent->right_child = node->parent;
+            }
             return ;
         }
         else
@@ -210,7 +292,16 @@ void RBT<Key, T, Key_Compare, Alloc>::two_adjacent_red_nodes_fixing(RBTNode* nod
             node->right_child = node->parent;
             node->right_child->parent = node;
             node->parent = node->left_child->parent;
+            if (node->parent == NULL)
+                root_node = node;
             node->left_child->parent = node;
+            if (node->parent)
+            {
+                if (node->parent->left_child == node->left_child)
+                    node->parent->left_child = node;
+                else
+                    node->parent->right_child = node;
+            }
             return ;
         }
     }
@@ -228,7 +319,7 @@ void RBT<Key, T, Key_Compare, Alloc>::erase_rednode_nochildren(RBTNode* node)
 
 
 template <class Key, class T, class Key_Compare, class Alloc>
-void RBT<Key, T, Key_Compare, Alloc>::erase_balcknode_oneredchildren(RBTNode* node)
+void RBT<Key, T, Key_Compare, Alloc>::erase_blacknode_oneredchildren(RBTNode* node)
 {
     *(node->pair) = (node->right_child)? *(node->right_child->pair) : *(node->left_child->pair);
     if (node->right_child)
@@ -265,7 +356,7 @@ void RBT<Key, T, Key_Compare, Alloc>::black_node_missing_fixing(RBTNode* node, b
                 if (parent->is_black && parent->parent)
                     black_node_missing_fixing(parent, 0);
                 else
-                    parent->is_black = 1; 
+                    parent->is_black = 1;
             }
             else if (parent->right_child->right_child && !parent->right_child->right_child->is_black)
             {
@@ -279,6 +370,8 @@ void RBT<Key, T, Key_Compare, Alloc>::black_node_missing_fixing(RBTNode* node, b
                     else
                         parent->parent->left_child = parent->right_child;
                 }
+                else
+                    root_node = parent->right_child;
                 parent->parent = parent->right_child;
                 parent->right_child = parent->right_child->left_child;
                 parent->parent->left_child = parent;
@@ -306,6 +399,106 @@ void RBT<Key, T, Key_Compare, Alloc>::black_node_missing_fixing(RBTNode* node, b
                 black_node_missing_fixing(node, 0);
             }
         }
+        else
+        {
+            parent->is_black = 0;
+            parent->right_child->is_black = 1;
+            parent->right_child->parent = parent->parent;
+            if (parent->parent)
+            {
+                if (parent->parent->left_child == parent)
+                    parent->parent->left_child = parent->right_child;
+                else
+                    parent->parent->right_child = parent->right_child;
+            }
+            else
+                root_node = parent->right_child;
+            parent->parent = parent->right_child;
+            parent->right_child = parent->right_child->left_child;
+            parent->right_child->parent = parent;
+            parent->parent->left_child = parent;
+            black_node_missing_fixing(node, erase);
+        }
+    }
+    else if (parent->right_child == node)
+    {
+        if (parent->left_child->is_black)
+        {
+            if ((parent->left_child->left_child && parent->left_child->left_child->is_black && parent->left_child->right_child && parent->left_child->right_child->is_black)
+            ||(!parent->left_child->left_child && !parent->left_child->right_child))
+            {
+                parent->left_child->is_black = 0;
+                if (erase)
+                {
+                    parent->right_child = NULL;
+                    delete (node);
+                }
+                if (parent->is_black && parent->parent)
+                    black_node_missing_fixing(parent, 0);
+                else
+                    parent->is_black = 1;
+            }
+            else if (parent->left_child->left_child && !parent->left_child->left_child->is_black)
+            {
+                parent->left_child->is_black = parent->is_black;
+                parent->is_black = 1;
+                parent->left_child->parent = parent->parent;
+                if (parent->parent)
+                {
+                    if (parent->parent->right_child == parent)
+                        parent->parent->right_child = parent->left_child;
+                    else
+                        parent->parent->left_child = parent->left_child;
+                }
+                else
+                    root_node = parent->left_child;
+                parent->parent = parent->left_child;
+                parent->left_child = parent->left_child->right_child;
+                parent->parent->right_child = parent;
+                if (parent->left_child)
+                    parent->left_child->parent = parent;
+                parent->parent->left_child->is_black = 1;
+                if (erase)
+                {
+                    parent->right_child = NULL;
+                    delete node;
+                }
+            }
+            else if (parent->left_child->left_child && !parent->left_child->left_child->is_black &&
+                (!parent->left_child->right_child || (parent->left_child->right_child && parent->left_child->right_child->is_black)))
+            {
+                parent->left_child->right_child->is_black = 1;
+                parent->left_child->is_black = 0;
+                parent->left_child->right_child->parent = parent;
+                parent->left_child->parent = parent->left_child->right_child;
+                parent->left_child->right_child = parent->left_child->right_child->left_child;
+                if (parent->left_child->right_child)
+                    parent->left_child->right_child->parent = parent->left_child;
+                parent->left_child->parent->left_child = parent->left_child;
+                parent->left_child = parent->left_child->parent;
+                black_node_missing_fixing(node, 0);
+            }
+        }
+        else
+        {
+            parent->is_black = 0;
+            parent->left_child->is_black = 1;
+            parent->left_child->parent = parent->parent;
+            if (parent->parent)
+            {
+                if (parent->parent->left_child == parent)
+                    parent->parent->left_child = parent->left_child;
+                else
+                    parent->parent->right_child = parent->left_child;
+            }
+            else
+                root_node = parent->left_child;
+            parent->parent = parent->left_child;
+            parent->left_child = parent->left_child->right_child;
+            parent->left_child->parent = parent;
+            parent->parent->right_child = parent;
+            black_node_missing_fixing(node, erase);
+        }
     }
 }
 
@@ -313,8 +506,8 @@ template <class Key, class T, class Key_Compare, class Alloc>
 void RBT<Key, T, Key_Compare, Alloc>::erase(const Key& k)
 {
     Key_Compare compare;
-    RBTNode node = root_node;
-    RBTNode rnode;
+    RBTNode *node = root_node;
+    RBTNode *rnode;
     if (!node)
         return;
     while (compare(k, node->pair->first) || compare(node->pair->first, k))
@@ -327,9 +520,9 @@ void RBT<Key, T, Key_Compare, Alloc>::erase(const Key& k)
     {
         if (!node->is_black)
             erase_rednode_nochildren(node);
-        else if (!node.parent)
+        else if (!node->parent)
         {
-            root_node == NULL;
+            root_node = NULL;
             delete node;
         }
         else
@@ -344,12 +537,12 @@ void RBT<Key, T, Key_Compare, Alloc>::erase(const Key& k)
         if (!rnode->is_black)   
             erase_rednode_nochildren(rnode);
         else if (rnode->right_child)
-            erase_balcknode_oneredchildren(rnode);
+            erase_blacknode_oneredchildren(rnode);
         else
             black_node_missing_fixing(rnode, 1);
     }
     else
-        erase_balcknode_oneredchildren(node);
+        erase_blacknode_oneredchildren(node);
 }
 
 
