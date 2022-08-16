@@ -58,8 +58,19 @@ class RBT
         {
             private:
                 RBTNode* node;
+                RBTNode** begin;
+                RBTNode** end;
+                bool to_begin;
+                bool to_end;
             public:
-                iterator(void) {node = NULL;}
+                iterator(void) 
+                {
+                    node = NULL;
+                    begin = NULL;
+                    end = NULL;
+                    to_begin = 0;
+                    to_end = 0;
+                }
                 iterator(RBTNode& obj){node = &obj;}
                 iterator(const iterator& obj) {*this = obj;}
                 ~iterator(void){}
@@ -67,24 +78,36 @@ class RBT
                 const iterator&   operator=(const iterator& obj)
                 {
                     node = obj.node;
+                    begin = obj.begin;
+                    end = obj.end;
+                    to_begin = obj.to_begin;
+                    to_end = obj.to_end;
                     return    *this;
                 }
                 pointer     operator->(void) {return (node->pair);}
                 reference   operator*(void) {return (*(node->pair));}
                 iterator    operator++(void)
                 {
-                    if (node->right_child)
+                    if (!node && to_begin)
+                    {
+                        node = *begin;
+                        to_begin = 0;
+                    }
+                    else if (node->is_end)
+                    {
+                        node = NULL;
+                        to_end = 1;
+                    }
+                    else if (node->right_child)
                     {
                         node = node->right_child;
                         while (node->left_child)
                             node = node->left_child;
                     }
-                    else if (node->parent)
+                    else
                     {
                         if (node->parent->left_child == node)
                             node = node->parent;
-                        else if (node->is_end)
-                            node = NULL;
                         else
                         {
                             while (node->parent->right_child == node)
@@ -92,24 +115,30 @@ class RBT
                             node = node->parent;
                         }
                     }
-                    else
-                        node = NULL;
                     return ;
                 }
                 iterator    operator--(void)
                 {
-                    if (node->right_child)
+                    if (!node && to_end)
                     {
-                        node = node->right_child;
-                        while (node->left_child)
-                            node = node->left_child;
+                        node = *end;
+                        to_end = 0;
                     }
-                    else if (node->parent)
+                    else if (node->is_begin)
                     {
-                        if (node->parent->left_child == node)
+                        node = NULL;
+                        to_end = 1;
+                    }
+                    else if (node->left_child)
+                    {
+                        node = node->left_child;
+                        while (node->right_child)
+                            node = node->right_child;
+                    }
+                    else
+                    {
+                        if (node->parent->right_child == node)
                             node = node->parent;
-                        else if (node->is_end)
-                            node = NULL;
                         else
                         {
                             while (node->parent->right_child == node)
@@ -117,8 +146,6 @@ class RBT
                             node = node->parent;
                         }
                     }
-                    else
-                        node = NULL;
                     return ;
                 }
         };
@@ -132,6 +159,8 @@ class RBT
         void erase_blacknode_oneredchildren(RBTNode* node);
     public:
         RBTNode* root_node;
+        RBTNode* begin;
+        RBTNode* end;
 };
 
 template <class Key, class T, class Key_Compare, class Alloc>

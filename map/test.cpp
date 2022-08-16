@@ -33,10 +33,7 @@ int main()
 
     m.insert(std::pair<int,int>(500, 500));
 
-    std::map<int,int>::iterator it = m.end();
-
-     it--;
-     it++;
+    std::map<int,int>::iterator it = m.begin();
 
 
 
