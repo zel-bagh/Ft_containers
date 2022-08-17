@@ -28,12 +28,13 @@ int main()
     //         std::cout << rbt.root_node->pair->first << std::endl;
 
     std::map<int,int> m;
-    m.insert(std::pair<int,int>(100, 100));
-        m.insert(std::pair<int,int>(25, 25));
+    // m.insert(std::pair<int,int>(100, 100));
+    //     m.insert(std::pair<int,int>(25, 25));
 
-    m.insert(std::pair<int,int>(500, 500));
+    // m.insert(std::pair<int,int>(500, 500));
 
     std::map<int,int>::iterator it = m.begin();
+    
 
 
 

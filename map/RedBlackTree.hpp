@@ -10,7 +10,12 @@ class RBT
         typedef typename Alloc::pointer     pointer;
         typedef typename Alloc::value_type         value_type;
     public:
-        RBT(void) {root_node = NULL;}
+        RBT(void)
+        {
+            root_node = NULL;
+            begin = NULL;
+            end = NULL;
+        }
         RBT(const RBT& obj) {*this = obj;} // should copy
         ~RBT(void) {} /// should destruct all nodes
     public:
@@ -141,7 +146,7 @@ class RBT
                             node = node->parent;
                         else
                         {
-                            while (node->parent->right_child == node)
+                            while (node->parent->left_child == node)
                                 node = node->parent;
                             node = node->parent;
                         }
@@ -177,6 +182,8 @@ std::pair<typename RBT<Key, T, Key_Compare, Alloc>::iterator, bool> RBT<Key, T, 
         root_node = new RBTNode(pr, 0, 1);
         root_node->is_end = 1;
         root_node->is_begin = 1;
+        end = root_node;
+        begin = root_node;
         return (std::pair<iterator, bool> (iterator(*root_node), 1));
     }
     else
@@ -211,11 +218,13 @@ std::pair<typename RBT<Key, T, Key_Compare, Alloc>::iterator, bool> RBT<Key, T, 
         {
             node->parent->is_end = 0;
             node->is_end = 1;
+            end = node;
         }
         else if (node->parent->left_child == node && node->parent->is_begin)
         {
             node->parent->is_begin = 0;
             node->is_begin = 1;
+            begin = node;
         }
         if (node->parent->is_black)
             return (std::pair<iterator, bool> (iterator(*node), 1));
@@ -368,14 +377,20 @@ void RBT<Key, T, Key_Compare, Alloc>::erase_blacknode_oneredchildren(RBTNode* no
     if (node->right_child)
     {
         if (node->right_child->is_end)
+        {
             node->is_end = 1;
+            end = node;
+        }
         delete node->right_child;
         node->right_child = NULL;
     }
     else
     {
         if (node->left_child->is_begin)
+        {
             node->is_begin = 1;
+            begin = node;
+        }
         delete node->left_child;
         node->left_child = NULL;
     }
@@ -567,8 +582,16 @@ void RBT<Key, T, Key_Compare, Alloc>::erase(const Key& k)
     {
         if (node->parent)
         {
-            node->parent->is_begin = (node->is_begin)? 1 : node->parent->is_begin;
-            node->parent->is_end = (node->is_end)? 1 : node->parent->is_end;
+            if (node->is_begin)
+            {
+                node->parent->is_begin = 1;
+                begin =  node->parent;
+            }
+            else if (node->is_end)
+            {
+                node->parent->is_end = 1;
+                end = node->parent;
+            }
         }
         if (!node->is_black)
             erase_rednode_nochildren(node);
@@ -589,7 +612,10 @@ void RBT<Key, T, Key_Compare, Alloc>::erase(const Key& k)
         if (!rnode->is_black)
         {
             if (rnode->is_end)
+            {
                 node->is_end = 1;
+                end = node;
+            }
             erase_rednode_nochildren(rnode);
         }
         else if (rnode->right_child)
@@ -597,7 +623,10 @@ void RBT<Key, T, Key_Compare, Alloc>::erase(const Key& k)
         else
         {
             if (rnode->is_end)
+            {
                 node->is_end = 1;
+                end = node;
+            }
             black_node_missing_fixing(rnode, 1);
         }
     }
