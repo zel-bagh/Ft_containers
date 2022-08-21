@@ -68,7 +68,7 @@ class RBT
                 bool to_begin;
                 bool to_end;
             public:
-                iterator(void) 
+                iterator(void)
                 {
                     node = NULL;
                     begin = NULL;
@@ -76,11 +76,18 @@ class RBT
                     to_begin = 0;
                     to_end = 0;
                 }
-                iterator(RBTNode& obj){node = &obj;}
+                iterator(RBTNode& obj, RBTNode** begin, RBTNode** end, bool to_begin, bool too_end)
+                {
+                    node = &obj;
+                    this->begin = begin;
+                    this->end = end;
+                    this->to_begin = to_begin;
+                    this->to_end = to_end;
+                }
                 iterator(const iterator& obj) {*this = obj;}
                 ~iterator(void){}
             public:
-                const iterator&   operator=(const iterator& obj)
+                iterator&   operator=(const iterator& obj)
                 {
                     node = obj.node;
                     begin = obj.begin;
@@ -91,72 +98,31 @@ class RBT
                 }
                 pointer     operator->(void) {return (node->pair);}
                 reference   operator*(void) {return (*(node->pair));}
-                iterator    operator++(void)
-                {
-                    if (!node && to_begin)
-                    {
-                        node = *begin;
-                        to_begin = 0;
-                    }
-                    else if (node->is_end)
-                    {
-                        node = NULL;
-                        to_end = 1;
-                    }
-                    else if (node->right_child)
-                    {
-                        node = node->right_child;
-                        while (node->left_child)
-                            node = node->left_child;
-                    }
-                    else
-                    {
-                        if (node->parent->left_child == node)
-                            node = node->parent;
-                        else
-                        {
-                            while (node->parent->right_child == node)
-                                node = node->parent;
-                            node = node->parent;
-                        }
-                    }
-                    return ;
-                }
-                iterator    operator--(void)
-                {
-                    if (!node && to_end)
-                    {
-                        node = *end;
-                        to_end = 0;
-                    }
-                    else if (node->is_begin)
-                    {
-                        node = NULL;
-                        to_end = 1;
-                    }
-                    else if (node->left_child)
-                    {
-                        node = node->left_child;
-                        while (node->right_child)
-                            node = node->right_child;
-                    }
-                    else
-                    {
-                        if (node->parent->right_child == node)
-                            node = node->parent;
-                        else
-                        {
-                            while (node->parent->left_child == node)
-                                node = node->parent;
-                            node = node->parent;
-                        }
-                    }
-                    return ;
-                }
+                void    operator++(void);
+                void    operator--(void);
+        };
+        class const_iterator
+        {
+            private:
+                iterator it;
+            public:
+            const_iterator(void){};
+            const_iterator(const const_iterator& obj){it = obj.it;}
+            const_iterator(const iterator& obj){it = obj;}
+            ~const_iterator(void);
+            const pointer     operator->(void) {return (&(*it));}
+            const reference   operator*(void) {return (*it);}
+            void    operator++(void){it++;}
+            void    operator--(void){it--;}
         };
     public:
+
+    public:
         std::pair<iterator, bool> insert(const std::pair<const Key, T>& pair);
-        void erase(const Key& k);
+        // void insert (iterator first, iterator last);
+        bool erase(const Key& k);
+        void erase(iterator position);
+        void erase(iterator first, iterator last);
     private:
         void two_adjacent_red_nodes_fixing(RBTNode* node);
         void black_node_missing_fixing(RBTNode* node, bool erase);
@@ -168,6 +134,75 @@ class RBT
         RBTNode* end;
 };
 
+//Iterator functions=================================================================================================>
+
+template <class Key, class T, class Key_Compare, class Alloc>
+void RBT<Key, T, Key_Compare, Alloc>::iterator::operator++(void)
+{
+    if (!node && to_begin)
+    {
+        node = *begin;
+        to_begin = 0;
+    }
+    else if (node->is_end)
+    {
+        node = NULL;
+        to_end = 1;
+    }
+    else if (node->right_child)
+    {
+        node = node->right_child;
+        while (node->left_child)
+            node = node->left_child;
+    }
+    else
+    {
+        if (node->parent->left_child == node)
+            node = node->parent;
+        else
+        {
+            while (node->parent->right_child == node)
+                node = node->parent;
+            node = node->parent;
+        }
+    }
+    return ;
+}
+
+template <class Key, class T, class Key_Compare, class Alloc>
+void RBT<Key, T, Key_Compare, Alloc>::iterator::operator--(void)
+{
+    if (!node && to_end)
+    {
+        node = *end;
+        to_end = 0;
+    }
+    else if (node->is_begin)
+    {
+        node = NULL;
+        to_end = 1;
+    }
+    else if (node->left_child)
+    {
+        node = node->left_child;
+        while (node->right_child)
+            node = node->right_child;
+    }
+    else
+    {
+        if (node->parent->right_child == node)
+            node = node->parent;
+        else
+        {
+            while (node->parent->left_child == node)
+                node = node->parent;
+            node = node->parent;
+        }
+    }
+    return ;
+}
+
+//=======================================================================================================================//
 template <class Key, class T, class Key_Compare, class Alloc>
 std::pair<typename RBT<Key, T, Key_Compare, Alloc>::iterator, bool> RBT<Key, T, Key_Compare, Alloc>::insert(const std::pair<const Key, T>& pair)
 {
@@ -373,27 +408,47 @@ void RBT<Key, T, Key_Compare, Alloc>::erase_rednode_nochildren(RBTNode* node)
 template <class Key, class T, class Key_Compare, class Alloc>
 void RBT<Key, T, Key_Compare, Alloc>::erase_blacknode_oneredchildren(RBTNode* node)
 {
-    *(node->pair) = (node->right_child)? *(node->right_child->pair) : *(node->left_child->pair);
-    if (node->right_child)
+    if (!node->parent)
     {
-        if (node->right_child->is_end)
+        root_node = (node->right_child)? node->right_child : node->left_child;
+        root_node->is_begin = 1;
+        root_node->is_end = 1;
+        root_node->is_black = 1;
+        root_node->parent = NULL;
+        begin = root_node;
+        end = root_node;
+    }
+    else if (node->parent->right_child == node)
+    {
+        if (node->right_child)
         {
-            node->is_end = 1;
-            end = node;
+            node->parent->right_child = node->right_child;
+            node->right_child->parent = node->parent;
+            node->right_child->is_black = 1;
         }
-        delete node->right_child;
-        node->right_child = NULL;
+        else
+        {
+            node->parent->right_child = node->left_child;
+            node->left_child->parent = node->parent;
+            node->left_child->is_black = 1;
+        }
     }
     else
     {
-        if (node->left_child->is_begin)
+        if (node->right_child)
         {
-            node->is_begin = 1;
-            begin = node;
+            node->parent->left_child = node->right_child;
+            node->right_child->parent = node->parent;
+            node->right_child->is_black = 1;
         }
-        delete node->left_child;
-        node->left_child = NULL;
+        else
+        {
+            node->parent->left_child = node->left_child;
+            node->left_child->parent = node->parent;
+            node->left_child->is_black = 1;
+        }     
     }
+    delete node;
 }
 
 template <class Key, class T, class Key_Compare, class Alloc>
@@ -565,22 +620,29 @@ void RBT<Key, T, Key_Compare, Alloc>::black_node_missing_fixing(RBTNode* node, b
 }
 
 template <class Key, class T, class Key_Compare, class Alloc>
-void RBT<Key, T, Key_Compare, Alloc>::erase(const Key& k)
+bool RBT<Key, T, Key_Compare, Alloc>::erase(const Key& k)
 {
     Key_Compare compare;
     RBTNode *node = root_node;
     RBTNode *rnode;
     if (!node)
-        return;
+        return (0);
     while (compare(k, node->pair->first) || compare(node->pair->first, k))
     {
         node = (compare(k, node->pair->first))? node->left_child : node->right_child;
         if (!node)
-            return;
+            return (0);
     }
     if (!node->right_child && !node->left_child)
     {
-        if (node->parent)
+        if (!node->parent)
+        {
+            root_node = NULL;
+            begin = NULL;
+            end = NULL;
+            delete node;
+        }
+        else
         {
             if (node->is_begin)
             {
@@ -592,16 +654,11 @@ void RBT<Key, T, Key_Compare, Alloc>::erase(const Key& k)
                 node->parent->is_end = 1;
                 end = node->parent;
             }
+            if (!node->is_black)
+                erase_rednode_nochildren(node);
+            else
+                black_node_missing_fixing(node, 1);
         }
-        if (!node->is_black)
-            erase_rednode_nochildren(node);
-        else if (!node->parent)
-        {
-            root_node = NULL;
-            delete node;
-        }
-        else
-            black_node_missing_fixing(node, 1);
     }
     else if (node->right_child && node->left_child)
     {
@@ -632,5 +689,27 @@ void RBT<Key, T, Key_Compare, Alloc>::erase(const Key& k)
     }
     else
         erase_blacknode_oneredchildren(node);
+    return (1);
 }
+
+template <class Key, class T, class Key_Compare, class Alloc>
+void RBT<Key, T, Key_Compare, Alloc>::erase(iterator position)
+{
+    erase(position->first);
+}
+
+template <class Key, class T, class Key_Compare, class Alloc>
+void RBT<Key, T, Key_Compare, Alloc>::erase(iterator first, iterator last)
+{
+    iterator next;
+
+    while (first != last)
+    {
+        next = first++;
+        first--;
+        erase(first->first);
+        first = next;
+    }
+}
+
 #endif
