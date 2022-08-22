@@ -13,8 +13,8 @@ class RBT
         RBT(void)
         {
             root_node = NULL;
-            begin = NULL;
-            end = NULL;
+            _begin = NULL;
+            _end = NULL;
         }
         RBT(const RBT& obj) {*this = obj;} // should copy
         ~RBT(void) {} /// should destruct all nodes
@@ -116,13 +116,16 @@ class RBT
             void    operator--(void){it--;}
         };
     public:
-
-    public:
         std::pair<iterator, bool> insert(const std::pair<const Key, T>& pair);
         // void insert (iterator first, iterator last);
         bool erase(const Key& k);
         void erase(iterator position);
         void erase(iterator first, iterator last);
+    public:
+        iterator begin(void);
+        const_iterator begin(void) const;
+        iterator end();
+        const_iterator end() const;
     private:
         void two_adjacent_red_nodes_fixing(RBTNode* node);
         void black_node_missing_fixing(RBTNode* node, bool erase);
@@ -130,8 +133,8 @@ class RBT
         void erase_blacknode_oneredchildren(RBTNode* node);
     public:
         RBTNode* root_node;
-        RBTNode* begin;
-        RBTNode* end;
+        RBTNode* _begin;
+        RBTNode* _end;
 };
 
 //Iterator functions=================================================================================================>
@@ -201,7 +204,34 @@ void RBT<Key, T, Key_Compare, Alloc>::iterator::operator--(void)
     }
     return ;
 }
-
+template <class Key, class T, class Key_Compare, class Alloc>
+typename RBT<Key, T, Key_Compare, Alloc>::iterator RBT<Key, T, Key_Compare, Alloc>::begin(void)
+{
+    if (root_node)
+        return (iterator(_begin, &_begin, &_end, 0, 0));
+    return (iterator());
+}
+template <class Key, class T, class Key_Compare, class Alloc>
+typename RBT<Key, T, Key_Compare, Alloc>::const_iterator RBT<Key, T, Key_Compare, Alloc>::begin(void) const
+{
+    if (root_node)
+        return (const_iterator(iterator(_begin, &_begin, &_end, 0, 0)));
+    return (const_iterator(iterator()));
+}
+template <class Key, class T, class Key_Compare, class Alloc>
+typename RBT<Key, T, Key_Compare, Alloc>::iterator RBT<Key, T, Key_Compare, Alloc>::end(void)
+{
+    if (root_node)
+        return (iterator(NULL, &_begin, &_end, 0, 1));
+    return (iterator());
+}
+template <class Key, class T, class Key_Compare, class Alloc>
+typename RBT<Key, T, Key_Compare, Alloc>::const_iterator RBT<Key, T, Key_Compare, Alloc>::end(void) const
+{
+    if (root_node)
+        return (const_iterator(iterator(NULL, &_begin, &_end, 0, 1)));
+    return (const_iterator(iterator()));
+}
 //=======================================================================================================================//
 template <class Key, class T, class Key_Compare, class Alloc>
 std::pair<typename RBT<Key, T, Key_Compare, Alloc>::iterator, bool> RBT<Key, T, Key_Compare, Alloc>::insert(const std::pair<const Key, T>& pair)
@@ -217,8 +247,8 @@ std::pair<typename RBT<Key, T, Key_Compare, Alloc>::iterator, bool> RBT<Key, T, 
         root_node = new RBTNode(pr, 0, 1);
         root_node->is_end = 1;
         root_node->is_begin = 1;
-        end = root_node;
-        begin = root_node;
+        _end = root_node;
+        _begin = root_node;
         return (std::pair<iterator, bool> (iterator(*root_node), 1));
     }
     else
@@ -253,13 +283,13 @@ std::pair<typename RBT<Key, T, Key_Compare, Alloc>::iterator, bool> RBT<Key, T, 
         {
             node->parent->is_end = 0;
             node->is_end = 1;
-            end = node;
+            _end = node;
         }
         else if (node->parent->left_child == node && node->parent->is_begin)
         {
             node->parent->is_begin = 0;
             node->is_begin = 1;
-            begin = node;
+            _begin = node;
         }
         if (node->parent->is_black)
             return (std::pair<iterator, bool> (iterator(*node), 1));
@@ -415,8 +445,8 @@ void RBT<Key, T, Key_Compare, Alloc>::erase_blacknode_oneredchildren(RBTNode* no
         root_node->is_end = 1;
         root_node->is_black = 1;
         root_node->parent = NULL;
-        begin = root_node;
-        end = root_node;
+        _begin = root_node;
+        _end = root_node;
     }
     else if (node->parent->right_child == node)
     {
@@ -432,6 +462,7 @@ void RBT<Key, T, Key_Compare, Alloc>::erase_blacknode_oneredchildren(RBTNode* no
             node->left_child->parent = node->parent;
             node->left_child->is_black = 1;
             node->left_child->is_end = node->is_end;
+            _end = (node->is_end)? node->left_child : _end;
         }
     }
     else
@@ -442,6 +473,7 @@ void RBT<Key, T, Key_Compare, Alloc>::erase_blacknode_oneredchildren(RBTNode* no
             node->right_child->parent = node->parent;
             node->right_child->is_black = 1;
             node->right_child->is_begin = node->is_begin;
+            _begin = (node->is_begin)? node->right_child : _begin;
         }
         else
         {
@@ -641,8 +673,8 @@ bool RBT<Key, T, Key_Compare, Alloc>::erase(const Key& k)
         if (!node->parent)
         {
             root_node = NULL;
-            begin = NULL;
-            end = NULL;
+            _begin = NULL;
+            _end = NULL;
             delete node;
         }
         else
@@ -650,12 +682,12 @@ bool RBT<Key, T, Key_Compare, Alloc>::erase(const Key& k)
             if (node->is_begin)
             {
                 node->parent->is_begin = 1;
-                begin =  node->parent;
+                _begin =  node->parent;
             }
             else if (node->is_end)
             {
                 node->parent->is_end = 1;
-                end = node->parent;
+                _end = node->parent;
             }
             if (!node->is_black)
                 erase_rednode_nochildren(node);
@@ -668,7 +700,6 @@ bool RBT<Key, T, Key_Compare, Alloc>::erase(const Key& k)
         rnode = node->right_child;
         while (rnode->left_child)
             rnode = rnode->left_child;
-        //switching==>
         RBTNode *tmp;
         tmp = rnode->parent;
         rnode->parent = node->parent;
@@ -677,7 +708,7 @@ bool RBT<Key, T, Key_Compare, Alloc>::erase(const Key& k)
             if (node->parent->right_child == node)
                 node->parent->right_child = rnode;
             else
-                node->parent->left_child = rnode; 
+                node->parent->left_child = rnode;
         }
         else
             root_node = rnode;
