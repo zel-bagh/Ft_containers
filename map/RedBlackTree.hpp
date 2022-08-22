@@ -431,6 +431,7 @@ void RBT<Key, T, Key_Compare, Alloc>::erase_blacknode_oneredchildren(RBTNode* no
             node->parent->right_child = node->left_child;
             node->left_child->parent = node->parent;
             node->left_child->is_black = 1;
+            node->left_child->is_end = node->is_end;
         }
     }
     else
@@ -440,6 +441,7 @@ void RBT<Key, T, Key_Compare, Alloc>::erase_blacknode_oneredchildren(RBTNode* no
             node->parent->left_child = node->right_child;
             node->right_child->parent = node->parent;
             node->right_child->is_black = 1;
+            node->right_child->is_begin = node->is_begin;
         }
         else
         {
@@ -625,6 +627,7 @@ bool RBT<Key, T, Key_Compare, Alloc>::erase(const Key& k)
     Key_Compare compare;
     RBTNode *node = root_node;
     RBTNode *rnode;
+    bool color;
     if (!node)
         return (0);
     while (compare(k, node->pair->first) || compare(node->pair->first, k))
@@ -665,27 +668,56 @@ bool RBT<Key, T, Key_Compare, Alloc>::erase(const Key& k)
         rnode = node->right_child;
         while (rnode->left_child)
             rnode = rnode->left_child;
-        *(node->pair) = *(rnode->pair);
-        if (!rnode->is_black)
+        //switching==>
+        RBTNode *tmp;
+        tmp = rnode->parent;
+        rnode->parent = node->parent;
+        if (node->parent)
         {
-            if (rnode->is_end)
-            {
-                node->is_end = 1;
-                end = node;
-            }
-            erase_rednode_nochildren(rnode);
+            if (node->parent->right_child == node)
+                node->parent->right_child = rnode;
+            else
+                node->parent->left_child = rnode; 
         }
-        else if (rnode->right_child)
-            erase_blacknode_oneredchildren(rnode);
+        else
+            root_node = rnode;
+        if (node->right_child == rnode)
+        {
+            node->parent = rnode;
+            node->right_child = rnode->right_child;
+            if (node->right_child)
+                node->right_child->parent = node;
+            rnode->right_child = node;
+            rnode->left_child = node->left_child;
+            rnode->left_child->parent = rnode;
+            node->left_child = NULL;
+            color = node->is_black;
+            node->is_black = rnode->is_black;
+            rnode->is_black = color;
+        }
         else
         {
-            if (rnode->is_end)
-            {
-                node->is_end = 1;
-                end = node;
-            }
-            black_node_missing_fixing(rnode, 1);
+            rnode->left_child = node->left_child;
+            rnode->left_child->parent = rnode;
+            node->left_child = NULL;
+            node->parent = tmp;
+            node->parent->left_child = node;
+            tmp = rnode->right_child;
+            rnode->right_child = node->right_child;
+            rnode->right_child->parent = rnode;
+            node->right_child = tmp;
+            if (node->right_child)
+                node->right_child->parent = node;
+            color = node->is_black;
+            node->is_black = rnode->is_black;
+            rnode->is_black = color;
         }
+        if (!node->is_black)
+            erase_rednode_nochildren(node);
+        else if (node->right_child)
+            erase_blacknode_oneredchildren(node);
+        else
+            black_node_missing_fixing(node, 1);
     }
     else
         erase_blacknode_oneredchildren(node);
