@@ -162,6 +162,7 @@ class RBT
     public: //capacity
         bool empty() const;
         size_type size() const;
+        size_type max_size() const;
     private:
         void two_adjacent_red_nodes_fixing(RBTNode* node);
         void black_node_missing_fixing(RBTNode* node, bool erase);
@@ -317,9 +318,25 @@ bool RBT<Key, T, Key_Compare, Alloc>::empty(void) const
 template <class Key, class T, class Key_Compare, class Alloc>
 typename RBT<Key, T, Key_Compare, Alloc>::size_type RBT<Key, T, Key_Compare, Alloc>::size(void) const
 {
+    unsigned int n;
+
+    n = 0;
     if (root_node)
         return (0);
+    iterator it = begin();
+    iterator end = end();
+    while(it != end)
+    {
+        n++;
+        it++;
+    }
+    return n;
     
+}
+template <class Key, class T, class Key_Compare, class Alloc>
+typename RBT<Key, T, Key_Compare, Alloc>::size_type RBT<Key, T, Key_Compare, Alloc>::max_size(void) const
+{
+    return (Alloc().max_size());    
 }
 //==============================================================================================================================>
 template <class Key, class T, class Key_Compare, class Alloc>

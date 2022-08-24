@@ -27,18 +27,21 @@ int main()
     // rbt.erase(25);
     //         std::cout << rbt.root_node->pair->first << std::endl;
 
-    std::map<int,int> m;
-    m.insert(std::pair<int,int>(100, 100));
-        m.insert(std::pair<int,int>(25, 25));
+    // std::map<int,int> m;
+    // m.insert(std::pair<int,int>(100, 100));
+    //     m.insert(std::pair<int,int>(25, 25));
 
-    m.insert(std::pair<int,int>(500, 500));
-    m.insert(std::pair<int,int>(50, 50));
+    // m.insert(std::pair<int,int>(500, 500));
+    // m.insert(std::pair<int,int>(50, 50));
 
-    std::map<int,int>::iterator it = m.begin();
+    // std::map<int,int>::iterator it = m.begin();
     
-    m.erase(it);
-    std::cout <<  it->first;
+    // m.erase(it);
+    // std::cout <<  it->first;
 
+    int i = 0;
+
+    std::allocator<int> a;
 
 
 
