@@ -9,6 +9,7 @@ class RBT
         typedef typename Alloc::reference   reference;
         typedef typename Alloc::pointer     pointer;
         typedef typename Alloc::value_type         value_type;
+        typedef unsigned int    size_type;
     public:
         RBT(void)
         {
@@ -76,7 +77,7 @@ class RBT
                     to_begin = 0;
                     to_end = 0;
                 }
-                iterator(RBTNode& obj, RBTNode** begin, RBTNode** end, bool to_begin, bool too_end)
+                iterator(RBTNode& obj, RBTNode** begin, RBTNode** end, bool to_begin, bool to_end)
                 {
                     node = &obj;
                     this->begin = begin;
@@ -115,17 +116,52 @@ class RBT
             void    operator++(void){it++;}
             void    operator--(void){it--;}
         };
+        class reverse_iterator
+        {
+            private:
+                iterator it;
+            public:
+            reverse_iterator(void){};
+            reverse_iterator(const reverse_iterator& obj){it = obj.it;}
+            reverse_iterator(const iterator& obj){it = obj;}
+            ~reverse_iterator(void);
+            pointer     operator->(void) {return (&(*it));}
+            reference   operator*(void) {return (*it);}
+            void    operator++(void){it--;}
+            void    operator--(void){it++;}
+        };
+        class const_reverse_iterator
+        {
+            private:
+                iterator it;
+            public:
+            const_reverse_iterator(void){};
+            const_reverse_iterator(const reverse_iterator& obj){it = obj.it;}
+            const_reverse_iterator(const iterator& obj){it = obj;}
+            ~const_reverse_iterator(void);
+            const pointer     operator->(void) {return (&(*it));}
+            const reference   operator*(void) {return (*it);}
+            void    operator++(void){it--;}
+            void    operator--(void){it++;}
+        };
     public:
         std::pair<iterator, bool> insert(const std::pair<const Key, T>& pair);
         // void insert (iterator first, iterator last);
         bool erase(const Key& k);
         void erase(iterator position);
         void erase(iterator first, iterator last);
-    public:
+    public: //Iterators
         iterator begin(void);
         const_iterator begin(void) const;
         iterator end();
         const_iterator end() const;
+        reverse_iterator rbegin();
+        const_reverse_iterator rbegin() const;
+        reverse_iterator rend();
+        const_reverse_iterator rend() const;
+    public: //capacity
+        bool empty() const;
+        size_type size() const;
     private:
         void two_adjacent_red_nodes_fixing(RBTNode* node);
         void black_node_missing_fixing(RBTNode* node, bool erase);
@@ -204,6 +240,7 @@ void RBT<Key, T, Key_Compare, Alloc>::iterator::operator--(void)
     }
     return ;
 }
+
 template <class Key, class T, class Key_Compare, class Alloc>
 typename RBT<Key, T, Key_Compare, Alloc>::iterator RBT<Key, T, Key_Compare, Alloc>::begin(void)
 {
@@ -211,13 +248,15 @@ typename RBT<Key, T, Key_Compare, Alloc>::iterator RBT<Key, T, Key_Compare, Allo
         return (iterator(_begin, &_begin, &_end, 0, 0));
     return (iterator());
 }
+
 template <class Key, class T, class Key_Compare, class Alloc>
 typename RBT<Key, T, Key_Compare, Alloc>::const_iterator RBT<Key, T, Key_Compare, Alloc>::begin(void) const
 {
     if (root_node)
         return (const_iterator(iterator(_begin, &_begin, &_end, 0, 0)));
-    return (const_iterator(iterator()));
+    return (const_iterator());
 }
+
 template <class Key, class T, class Key_Compare, class Alloc>
 typename RBT<Key, T, Key_Compare, Alloc>::iterator RBT<Key, T, Key_Compare, Alloc>::end(void)
 {
@@ -225,14 +264,64 @@ typename RBT<Key, T, Key_Compare, Alloc>::iterator RBT<Key, T, Key_Compare, Allo
         return (iterator(NULL, &_begin, &_end, 0, 1));
     return (iterator());
 }
+
 template <class Key, class T, class Key_Compare, class Alloc>
 typename RBT<Key, T, Key_Compare, Alloc>::const_iterator RBT<Key, T, Key_Compare, Alloc>::end(void) const
 {
     if (root_node)
         return (const_iterator(iterator(NULL, &_begin, &_end, 0, 1)));
-    return (const_iterator(iterator()));
+    return (const_iterator());
 }
-//=======================================================================================================================//
+
+template <class Key, class T, class Key_Compare, class Alloc>
+typename RBT<Key, T, Key_Compare, Alloc>::reverse_iterator RBT<Key, T, Key_Compare, Alloc>::rbegin(void)
+{
+    if (root_node)
+        return (reverse_iterator(iterator(_end, &_begin, &_end, 0, 0)));
+    return (reverse_iterator());
+}
+
+template <class Key, class T, class Key_Compare, class Alloc>
+typename RBT<Key, T, Key_Compare, Alloc>::const_reverse_iterator RBT<Key, T, Key_Compare, Alloc>::rbegin(void) const
+{
+    if (root_node)
+        return (const_reverse_iterator(iterator(_end, &_begin, &_end, 0, 0)));
+    return (const_reverse_iterator());
+}
+
+template <class Key, class T, class Key_Compare, class Alloc>
+typename RBT<Key, T, Key_Compare, Alloc>::reverse_iterator RBT<Key, T, Key_Compare, Alloc>::rend(void)
+{
+    if (root_node)
+        return (reverse_iterator(iterator(NULL, &_begin, &_end, 1, 0)));
+    return (reverse_iterator());
+}
+
+template <class Key, class T, class Key_Compare, class Alloc>
+typename RBT<Key, T, Key_Compare, Alloc>::const_reverse_iterator RBT<Key, T, Key_Compare, Alloc>::rend(void) const
+{
+    if (root_node)
+        return (const_reverse_iterator(iterator(NULL, &_begin, &_end, 1, 0)));
+    return (const_reverse_iterator());
+}
+//Capacity=====================================================================================================================>
+
+template <class Key, class T, class Key_Compare, class Alloc>
+bool RBT<Key, T, Key_Compare, Alloc>::empty(void) const
+{
+    if (root_node)
+        return (0);
+    return (1);
+}
+
+template <class Key, class T, class Key_Compare, class Alloc>
+typename RBT<Key, T, Key_Compare, Alloc>::size_type RBT<Key, T, Key_Compare, Alloc>::size(void) const
+{
+    if (root_node)
+        return (0);
+    
+}
+//==============================================================================================================================>
 template <class Key, class T, class Key_Compare, class Alloc>
 std::pair<typename RBT<Key, T, Key_Compare, Alloc>::iterator, bool> RBT<Key, T, Key_Compare, Alloc>::insert(const std::pair<const Key, T>& pair)
 {
