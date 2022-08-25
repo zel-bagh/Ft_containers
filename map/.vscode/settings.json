@@ -62,6 +62,7 @@
         "typeinfo": "cpp",
         "utility": "cpp",
         "vector": "cpp",
-        "__cxx_version": "cpp"
+        "__cxx_version": "cpp",
+        "memory_resource": "cpp"
     }
 }

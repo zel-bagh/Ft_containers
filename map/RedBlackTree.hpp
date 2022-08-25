@@ -1,6 +1,7 @@
 #ifndef RED_BLACK_TREE
 #define RED_BLACK_TREE
 #include<functional>
+#include <stdexcept> 
 
 template <class Key, class T, class Key_Compare, class Alloc>
 class RBT
@@ -144,12 +145,14 @@ class RBT
             void    operator++(void){it--;}
             void    operator--(void){it++;}
         };
-    public:
+    public: //Modifiers:
         std::pair<iterator, bool> insert(const std::pair<const Key, T>& pair);
         // void insert (iterator first, iterator last);
         bool erase(const Key& k);
         void erase(iterator position);
         void erase(iterator first, iterator last);
+        void swap (RBT& x);
+        void clear(void);
     public: //Iterators
         iterator begin(void);
         const_iterator begin(void) const;
@@ -163,6 +166,10 @@ class RBT
         bool empty() const;
         size_type size() const;
         size_type max_size() const;
+    public: //Element access:
+        T& operator[] (const Key& k);
+        T& at (const Key& k);
+        const T& at (const Key& k) const;
     private:
         void two_adjacent_red_nodes_fixing(RBTNode* node);
         void black_node_missing_fixing(RBTNode* node, bool erase);
@@ -333,12 +340,65 @@ typename RBT<Key, T, Key_Compare, Alloc>::size_type RBT<Key, T, Key_Compare, All
     return n;
     
 }
+
 template <class Key, class T, class Key_Compare, class Alloc>
 typename RBT<Key, T, Key_Compare, Alloc>::size_type RBT<Key, T, Key_Compare, Alloc>::max_size(void) const
 {
-    return (Alloc().max_size());    
+    return (Alloc().max_size());
 }
-//==============================================================================================================================>
+
+//Element access==============================================================================================================================>
+
+template <class Key, class T, class Key_Compare, class Alloc>
+T& RBT<Key, T, Key_Compare, Alloc>::operator[](const Key& k)
+{
+    T value;
+
+    return ((*(insert(std::pair<Key, T>(k, value)).first)).second);
+}
+
+template <class Key, class T, class Key_Compare, class Alloc>
+T& RBT<Key, T, Key_Compare, Alloc>::at(const Key& k)
+{
+    iterator it = begin();
+    iterator end = end();
+    Key_Compare compare;
+    
+    while (it != end)
+    {
+        if (compare((*it).first, k) == 0 && compare(k, (*it).first) == 0)
+            return ((*it).second);
+        it++;
+    }
+    throw (std::out_of_range("key not found"));
+}
+
+//Modifiers==============================================================================================================================>
+
+template <class Key, class T, class Key_Compare, class Alloc>
+void RBT<Key, T, Key_Compare, Alloc>::swap(RBT& x)
+{
+    RBTNode* tmp;
+
+    tmp = root_node;
+    root_node = x.root_node;
+    x.root_node = tmp;
+    tmp = _begin;
+    _begin = x._begin;
+    x._begin = tmp;
+    tmp = _end;
+    _end = x._end;
+    x._end = tmp;
+}
+
+template <class Key, class T, class Key_Compare, class Alloc>
+void RBT<Key, T, Key_Compare, Alloc>::clear(void)
+{
+    iterator it = begin();
+    iterator end = end();
+    erase(it, end);
+}
+
 template <class Key, class T, class Key_Compare, class Alloc>
 std::pair<typename RBT<Key, T, Key_Compare, Alloc>::iterator, bool> RBT<Key, T, Key_Compare, Alloc>::insert(const std::pair<const Key, T>& pair)
 {
