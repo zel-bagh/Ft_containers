@@ -145,6 +145,17 @@ class RBT
             void    operator++(void){it--;}
             void    operator--(void){it++;}
         };
+    public:
+        class value_compare
+        {
+            private:
+               Key_Compare comp;
+            public:
+              bool operator() (const value_type& x, const value_type& y) const
+              {
+                return comp(x.first, y.first);
+              }
+        };
     public: //Modifiers:
         std::pair<iterator, bool> insert(const std::pair<const Key, T>& pair);
         // void insert (iterator first, iterator last);
@@ -153,6 +164,9 @@ class RBT
         void erase(iterator first, iterator last);
         void swap (RBT& x);
         void clear(void);
+    public: //Operations
+        iterator find (const Key& k);
+        const_iterator find (const Key& k) const;
     public: //Iterators
         iterator begin(void);
         const_iterator begin(void) const;
@@ -170,6 +184,9 @@ class RBT
         T& operator[] (const Key& k);
         T& at (const Key& k);
         const T& at (const Key& k) const;
+    public: //Observers
+        Key_Compare key_comp() const;
+        value_compare value_comp() const;
     private:
         void two_adjacent_red_nodes_fixing(RBTNode* node);
         void black_node_missing_fixing(RBTNode* node, bool erase);
@@ -371,6 +388,70 @@ T& RBT<Key, T, Key_Compare, Alloc>::at(const Key& k)
         it++;
     }
     throw (std::out_of_range("key not found"));
+}
+
+template <class Key, class T, class Key_Compare, class Alloc>
+const T& RBT<Key, T, Key_Compare, Alloc>::at(const Key& k) const
+{
+    iterator it = begin();
+    iterator end = end();
+    Key_Compare compare;
+    
+    while (it != end)
+    {
+        if (compare((*it).first, k) == 0 && compare(k, (*it).first) == 0)
+            return ((*it).second);
+        it++;
+    }
+    throw (std::out_of_range("key not found"));
+}
+
+//Observers==============================================================================================================================>
+
+template <class Key, class T, class Key_Compare, class Alloc>
+Key_Compare RBT<Key, T, Key_Compare, Alloc>::key_comp(void) const
+{
+    return (Key_Compare());
+}
+
+template <class Key, class T, class Key_Compare, class Alloc>
+typename RBT<Key, T, Key_Compare, Alloc>::value_compare RBT<Key, T, Key_Compare, Alloc>::value_comp() const
+{
+    return (value_compare());
+}
+
+//Operations==============================================================================================================================>
+
+template <class Key, class T, class Key_Compare, class Alloc>
+typename RBT<Key, T, Key_Compare, Alloc>::iterator RBT<Key, T, Key_Compare, Alloc>::find(const Key& k)
+{
+    iterator it = begin();
+    iterator end = end();
+    Key_Compare compare;
+    
+    while (it != end)
+    {
+        if (compare((*it).first, k) == 0 && compare(k, (*it).first) == 0)
+            return (it);
+        it++;
+    }
+    return (end());
+}
+
+template <class Key, class T, class Key_Compare, class Alloc>
+typename RBT<Key, T, Key_Compare, Alloc>::const_iterator RBT<Key, T, Key_Compare, Alloc>::find(const Key& k) const
+{
+    iterator it = begin();
+    iterator end = end();
+    Key_Compare compare;
+    
+    while (it != end)
+    {
+        if (compare((*it).first, k) == 0 && compare(k, (*it).first) == 0)
+            return (const_iterator(it));
+        it++;
+    }
+    return (const_iterator());
 }
 
 //Modifiers==============================================================================================================================>

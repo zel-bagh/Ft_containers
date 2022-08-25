@@ -39,7 +39,7 @@ int main()
     // m.erase(it);
     // std::cout <<  it->first;
 
-    // std::map<int,int> n;
+    std::map<int,int> n;
     // n.insert(std::pair<int,int>(200, 200));
     // std::map<int, int>::iterator it = n.begin();
     // it++;
@@ -51,16 +51,10 @@ int main()
 
     // it--;
     //  std::cout << it->first;
-    try
-    {
-    m.at(4);
-    }
-    catch(std::out_of_range& a)
-    {
-        std::cout << a.what();
-    }
 
+    std::map<int, int>::iterator it = n.end();
 
+    it--;
 
 
 
