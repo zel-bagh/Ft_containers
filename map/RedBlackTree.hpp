@@ -18,12 +18,16 @@ class RBT
             _begin = NULL;
             _end = NULL;
         }
-        RBT(const RBT& obj) {*this = obj;} // should copy
-        ~RBT(void) {} /// should destruct all nodes
+        RBT(const RBT& obj) {*this = obj;}
+        ~RBT(void) {clear();}
     public:
         const RBT& operator=(const RBT& obj)
         {
-            (void)obj;
+            if (root_node)
+                clear();
+            root_node = obj.root_node;
+            _begin = obj._begin;
+            _end = obj._end;
             return *this;
         }
     public:
@@ -56,7 +60,7 @@ class RBT
             public:
                 const RBTNode& operator=(const RBTNode& obj)
                 {
-                    (void)obj; //////////
+                    (void)obj;
                     return *this;
                 }
         };
@@ -167,6 +171,13 @@ class RBT
     public: //Operations
         iterator find (const Key& k);
         const_iterator find (const Key& k) const;
+        size_type count (const Key& k) const;
+        iterator lower_bound (const Key& k);
+        const_iterator lower_bound (const Key& k) const;
+        iterator upper_bound (const Key& k);
+        const_iterator upper_bound (const Key& k) const;
+        std::pair<const_iterator,const_iterator> equal_range (const Key& k) const;
+        std::pair<iterator,iterator>             equal_range (const Key& k);
     public: //Iterators
         iterator begin(void);
         const_iterator begin(void) const;
@@ -435,7 +446,7 @@ typename RBT<Key, T, Key_Compare, Alloc>::iterator RBT<Key, T, Key_Compare, Allo
             return (it);
         it++;
     }
-    return (end());
+    return (end);
 }
 
 template <class Key, class T, class Key_Compare, class Alloc>
@@ -452,6 +463,98 @@ typename RBT<Key, T, Key_Compare, Alloc>::const_iterator RBT<Key, T, Key_Compare
         it++;
     }
     return (const_iterator());
+}
+
+template <class Key, class T, class Key_Compare, class Alloc>
+typename RBT<Key, T, Key_Compare, Alloc>::size_type RBT<Key, T, Key_Compare, Alloc>::count (const Key& k) const
+{
+    iterator it = begin();
+    iterator end = end();
+    Key_Compare compare;
+    
+    while (it != end)
+    {
+        if (compare((*it).first, k) == 0 && compare(k, (*it).first) == 0)
+            return (1);
+        it++;
+    }
+    return (0);
+}
+
+template <class Key, class T, class Key_Compare, class Alloc>
+typename RBT<Key, T, Key_Compare, Alloc>::iterator RBT<Key, T, Key_Compare, Alloc>::lower_bound (const Key& k)
+{
+    iterator it = begin();
+    iterator end = end();
+    Key_Compare compare;
+    
+    while (it != end)
+    {
+        if (compare((*it).first, k) == 0)
+            return (it);
+        it++;
+    }
+    return (end);
+}
+
+template <class Key, class T, class Key_Compare, class Alloc>
+typename RBT<Key, T, Key_Compare, Alloc>::const_iterator RBT<Key, T, Key_Compare, Alloc>::lower_bound (const Key& k) const
+{
+    iterator it = begin();
+    iterator end = end();
+    Key_Compare compare;
+    
+    while (it != end)
+    {
+        if (compare((*it).first, k) == 0)
+            return (const_iterator(it));
+        it++;
+    }
+    return (const_iterator(end));
+}
+
+template <class Key, class T, class Key_Compare, class Alloc>
+typename RBT<Key, T, Key_Compare, Alloc>::iterator RBT<Key, T, Key_Compare, Alloc>::upper_bound(const Key& k)
+{
+    iterator it = begin();
+    iterator end = end();
+    Key_Compare compare;
+    
+    while (it != end)
+    {
+        if (compare(k, (*it).first) == 1)
+            return (it);
+        it++;
+    }
+    return (end);
+}
+
+template <class Key, class T, class Key_Compare, class Alloc>
+typename RBT<Key, T, Key_Compare, Alloc>::const_iterator RBT<Key, T, Key_Compare, Alloc>::upper_bound(const Key& k) const
+{
+    iterator it = begin();
+    iterator end = end();
+    Key_Compare compare;
+    
+    while (it != end)
+    {
+        if (compare(k, (*it).first) == 1)
+            return (const_iterator(it));
+        it++;
+    }
+    return (const_iterator(end));
+}
+
+template <class Key, class T, class Key_Compare, class Alloc>
+std::pair<typename RBT<Key, T, Key_Compare, Alloc>::iterator,typename RBT<Key, T, Key_Compare, Alloc>::iterator> RBT<Key, T, Key_Compare, Alloc>::equal_range(const Key& k)
+{
+    return (std::pair<iterator, iterator> (lower_bound(k), upper_bound(k)));
+}
+
+template <class Key, class T, class Key_Compare, class Alloc>
+std::pair<typename RBT<Key, T, Key_Compare, Alloc>::const_iterator,typename RBT<Key, T, Key_Compare, Alloc>::const_iterator> RBT<Key, T, Key_Compare, Alloc>::equal_range(const Key& k) const
+{
+    return (std::pair<const_iterator, const_iterator> (lower_bound(k), upper_bound(k)));
 }
 
 //Modifiers==============================================================================================================================>
