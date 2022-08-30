@@ -5,6 +5,27 @@
 #include"RedBlackTree.hpp"
 
 
+class test
+{
+    public:
+        int c;
+    test()
+    {c = 0;}
+    test operator++(int)
+    {
+        test tmp;
+        tmp.c = c;
+        c++;
+        return tmp;
+    }
+    test& operator++(void)
+    {c++;return *this;}
+    bool operator==(test& obj)
+    {
+        return (c == obj.c);
+    }
+};
+
 int main()
 {
     // RBT<int, int, std::less<int>, std::allocator<std::pair<int, int> > > rbt;
@@ -27,36 +48,17 @@ int main()
     // rbt.erase(25);
     //         std::cout << rbt.root_node->pair->first << std::endl;
 
-    std::map<int,int> m;
-    m.insert(std::pair<int,int>(100, 100));
-    //     m.insert(std::pair<int,int>(25, 25));
+    // std::map<int,int> m;
+    // m.insert(std::pair<int,int>(100, 100));
+    // std::map<int, int>::iterator it = m.begin();
+    // std::map<int, int>::iterator end = m.end();
+    // if (it++ == end)
+    //     std::cout << "it got incremented before comparison" << std::endl;
 
-    // m.insert(std::pair<int,int>(500, 500));
-    // m.insert(std::pair<int,int>(50, 50));
+    test t;
+    test o;
 
-    // std::map<int,int>::iterator it = m.begin();
-    
-    // m.erase(it);
-    // std::cout <<  it->first;
-
-    std::map<int,int> n;
-    // n.insert(std::pair<int,int>(200, 200));
-    // std::map<int, int>::iterator it = n.begin();
-    // it++;
-    // it--;
-    // std::cout << it->first << std::endl;
-    // it++;
-    // std::map<int, int>::iterator ti = m.begin();
-    // m.swap(n);
-
-    // it--;
-    //  std::cout << it->first;
-
-    std::map<int, int>::iterator it = n.end();
-
-    it--;
-
-
-
+    if (t++ == o)
+        std::cout << "comparison before incrementation" << std::endl;
     
 }

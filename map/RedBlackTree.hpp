@@ -106,6 +106,10 @@ class RBT
                 reference   operator*(void) {return (*(node->pair));}
                 void    operator++(void);
                 void    operator--(void);
+                void    operator++(int);
+                void    operator--(int);
+                bool    operator==(const iterator& obj);
+                bool    operator!=(const iterator& obj);
         };
         class const_iterator
         {
@@ -120,6 +124,10 @@ class RBT
             const reference   operator*(void) {return (*it);}
             void    operator++(void){it++;}
             void    operator--(void){it--;}
+            void    operator++(int){++it;};
+            void    operator--(int){--it;};
+            bool    operator==(const const_iterator& obj){return (it == obj.it);}
+            bool    operator!=(const const_iterator& obj){return (it != obj.it);}
         };
         class reverse_iterator
         {
@@ -134,6 +142,8 @@ class RBT
             reference   operator*(void) {return (*it);}
             void    operator++(void){it--;}
             void    operator--(void){it++;}
+            bool    operator==(const reverse_iterator& obj){return (it == obj.it);}
+            bool    operator!=(const reverse_iterator& obj){return (it != obj.it);}
         };
         class const_reverse_iterator
         {
@@ -148,6 +158,8 @@ class RBT
             const reference   operator*(void) {return (*it);}
             void    operator++(void){it--;}
             void    operator--(void){it++;}
+            bool    operator==(const const_reverse_iterator& obj){return (it == obj.it);}
+            bool    operator!=(const const_reverse_iterator& obj){return (it != obj.it);}
         };
     public:
         class value_compare
@@ -210,6 +222,18 @@ class RBT
 };
 
 //Iterator functions=================================================================================================>
+
+template <class Key, class T, class Key_Compare, class Alloc>
+bool RBT<Key, T, Key_Compare, Alloc>::iterator::operator==(const iterator& obj)
+{
+    return ((node == obj.node) && (begin = obj.begin) && (end = obj.end) && (to_begin == obj.to_begin) && (to_end == obj.to_end));
+}
+
+template <class Key, class T, class Key_Compare, class Alloc>
+bool RBT<Key, T, Key_Compare, Alloc>::iterator::operator!=(const iterator& obj)
+{
+    return (!((node == obj.node) && (begin = obj.begin) && (end = obj.end) && (to_begin == obj.to_begin) && (to_end == obj.to_end)));
+}
 
 template <class Key, class T, class Key_Compare, class Alloc>
 void RBT<Key, T, Key_Compare, Alloc>::iterator::operator++(void)
