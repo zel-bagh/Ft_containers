@@ -104,10 +104,10 @@ class RBT
                 }
                 pointer     operator->(void) {return (node->pair);}
                 reference   operator*(void) {return (*(node->pair));}
-                void    operator++(void);
-                void    operator--(void);
-                void    operator++(int);
-                void    operator--(int);
+                iterator&    operator++(void);
+                iterator&    operator--(void);
+                iterator    operator++(int);
+                iterator    operator--(int);
                 bool    operator==(const iterator& obj);
                 bool    operator!=(const iterator& obj);
         };
@@ -117,15 +117,17 @@ class RBT
                 iterator it;
             public:
             const_iterator(void){};
-            const_iterator(const const_iterator& obj){it = obj.it;}
+            const_iterator(const const_iterator& obj){*this = obj;}
             const_iterator(const iterator& obj){it = obj;}
             ~const_iterator(void);
+            public:
+            const_iterator& operator=(const const_iterator& obj){it = obj.it; return *this;}
             const pointer     operator->(void) {return (&(*it));}
             const reference   operator*(void) {return (*it);}
-            void    operator++(void){it++;}
-            void    operator--(void){it--;}
-            void    operator++(int){++it;};
-            void    operator--(int){--it;};
+            const_iterator&    operator++(void){++it; return *this;}
+            const_iterator&    operator--(void){--it; return *this;}
+            const_iterator    operator++(int){return const_iterator(it++);}
+            const_iterator    operator--(int){return const_iterator(it--);}
             bool    operator==(const const_iterator& obj){return (it == obj.it);}
             bool    operator!=(const const_iterator& obj){return (it != obj.it);}
         };
@@ -135,13 +137,17 @@ class RBT
                 iterator it;
             public:
             reverse_iterator(void){};
-            reverse_iterator(const reverse_iterator& obj){it = obj.it;}
+            reverse_iterator(const reverse_iterator& obj){*this = obj;}
             reverse_iterator(const iterator& obj){it = obj;}
             ~reverse_iterator(void);
+            public:
+            reverse_iterator& operator=(const reverse_iterator& obj){it = obj.it; return *this;}
             pointer     operator->(void) {return (&(*it));}
             reference   operator*(void) {return (*it);}
-            void    operator++(void){it--;}
-            void    operator--(void){it++;}
+            reverse_iterator&    operator++(void){--it; return *this;}
+            reverse_iterator&    operator--(void){++it; return *this;}
+            reverse_iterator    operator++(int){return reverse_iterator(it--);}
+            reverse_iterator    operator--(int){return reverse_iterator(it++);}
             bool    operator==(const reverse_iterator& obj){return (it == obj.it);}
             bool    operator!=(const reverse_iterator& obj){return (it != obj.it);}
         };
@@ -151,13 +157,17 @@ class RBT
                 iterator it;
             public:
             const_reverse_iterator(void){};
-            const_reverse_iterator(const reverse_iterator& obj){it = obj.it;}
+            const_reverse_iterator(const reverse_iterator& obj){*this = obj;}
             const_reverse_iterator(const iterator& obj){it = obj;}
             ~const_reverse_iterator(void);
+            public:
+            const_reverse_iterator& operator=(const const_reverse_iterator& obj){it = obj.it; return *this;}
             const pointer     operator->(void) {return (&(*it));}
             const reference   operator*(void) {return (*it);}
-            void    operator++(void){it--;}
-            void    operator--(void){it++;}
+            const_reverse_iterator&    operator++(void){--it; return *this;}
+            const_reverse_iterator&    operator--(void){++it; return *this;}
+            const_reverse_iterator    operator++(int){return const_reverse_iterator(it--);}
+            const_reverse_iterator    operator--(int){return const_reverse_iterator(it++);}
             bool    operator==(const const_reverse_iterator& obj){return (it == obj.it);}
             bool    operator!=(const const_reverse_iterator& obj){return (it != obj.it);}
         };
@@ -236,7 +246,24 @@ bool RBT<Key, T, Key_Compare, Alloc>::iterator::operator!=(const iterator& obj)
 }
 
 template <class Key, class T, class Key_Compare, class Alloc>
-void RBT<Key, T, Key_Compare, Alloc>::iterator::operator++(void)
+typename RBT<Key, T, Key_Compare, Alloc>::iterator RBT<Key, T, Key_Compare, Alloc>::iterator::operator++(int)
+{
+    iterator tmp = *this;
+    ++(*this);
+    return tmp;
+}
+
+template <class Key, class T, class Key_Compare, class Alloc>
+typename RBT<Key, T, Key_Compare, Alloc>::iterator RBT<Key, T, Key_Compare, Alloc>::iterator::operator--(int)
+{
+    iterator tmp = *this;
+    --(*this);
+    return tmp;
+}
+
+
+template <class Key, class T, class Key_Compare, class Alloc>
+typename RBT<Key, T, Key_Compare, Alloc>::iterator& RBT<Key, T, Key_Compare, Alloc>::iterator::operator++(void)
 {
     if (!node && to_begin)
     {
@@ -265,11 +292,11 @@ void RBT<Key, T, Key_Compare, Alloc>::iterator::operator++(void)
             node = node->parent;
         }
     }
-    return ;
+    return *this;
 }
 
 template <class Key, class T, class Key_Compare, class Alloc>
-void RBT<Key, T, Key_Compare, Alloc>::iterator::operator--(void)
+typename RBT<Key, T, Key_Compare, Alloc>::iterator& RBT<Key, T, Key_Compare, Alloc>::iterator::operator--(void)
 {
     if (!node && to_end)
     {
@@ -298,7 +325,7 @@ void RBT<Key, T, Key_Compare, Alloc>::iterator::operator--(void)
             node = node->parent;
         }
     }
-    return ;
+    return *this;
 }
 
 template <class Key, class T, class Key_Compare, class Alloc>

@@ -20,9 +20,9 @@ class test
     }
     test& operator++(void)
     {c++;return *this;}
-    bool operator==(test& obj)
+    int operator*(void)
     {
-        return (c == obj.c);
+        return (c);
     }
 };
 
@@ -58,7 +58,6 @@ int main()
     test t;
     test o;
 
-    if (t++ == o)
-        std::cout << "comparison before incrementation" << std::endl;
+    std::cout << *++t;
     
 }
