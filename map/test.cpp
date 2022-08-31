@@ -2,29 +2,30 @@
 #include<iostream>
 #include<map>
 #include"test.hpp"
-#include"RedBlackTree.hpp"
+#include"map.hpp"
 
 
-class test
-{
-    public:
-        int c;
-    test()
-    {c = 0;}
-    test operator++(int)
-    {
-        test tmp;
-        tmp.c = c;
-        c++;
-        return tmp;
-    }
-    test& operator++(void)
-    {c++;return *this;}
-    int operator*(void)
-    {
-        return (c);
-    }
-};
+// class test
+// {
+//     public:
+//         int c;
+//     test()
+//     {c = 0;}
+//     test operator++(int)
+//     {
+//         test tmp;
+//         tmp.c = c;
+//         c++;
+//         return tmp;
+//     }
+//     test& operator++(void)
+//     {c++;return *this;}
+//     int operator*(void)
+//     {
+//         return (c);
+//     }
+// };
+
 
 int main()
 {
@@ -55,9 +56,10 @@ int main()
     // if (it++ == end)
     //     std::cout << "it got incremented before comparison" << std::endl;
 
-    test t;
-    test o;
+    // test t;
+    // test o;
 
-    std::cout << *++t;
+    // std::cout << *++t;
+    // std::pair<const int, int> a(0,1);
     
 }

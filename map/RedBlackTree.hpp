@@ -10,7 +10,7 @@ class RBT
         typedef typename Alloc::reference   reference;
         typedef typename Alloc::pointer     pointer;
         typedef typename Alloc::value_type         value_type;
-        typedef unsigned int    size_type;
+        typedef size_t    size_type;
     public:
         RBT(void)
         {
@@ -45,8 +45,7 @@ class RBT
                 RBTNode(const reference p, RBTNode* prt, bool color) : is_black(color), parent(prt)
                 {
                     Alloc allocator;
-                    pair = allocator.allocate(1);
-                    *pair = p;
+                    pair = allocator.allocate(1)(p);
                     right_child = NULL;
                     left_child = NULL;
                     is_begin = 0;
@@ -183,8 +182,10 @@ class RBT
               }
         };
     public: //Modifiers:
-        std::pair<iterator, bool> insert(const std::pair<const Key, T>& pair);
-        // void insert (iterator first, iterator last);
+        std::pair<iterator, bool> insert(const value_type& value);
+        iterator insert (iterator position, const value_type& val); 
+        template <class InputIterator>
+            void insert (InputIterator first, InputIterator last);
         bool erase(const Key& k);
         void erase(iterator position);
         void erase(iterator first, iterator last);
@@ -225,7 +226,7 @@ class RBT
         void black_node_missing_fixing(RBTNode* node, bool erase);
         void erase_rednode_nochildren(RBTNode* node);
         void erase_blacknode_oneredchildren(RBTNode* node);
-    public:
+    private:
         RBTNode* root_node;
         RBTNode* _begin;
         RBTNode* _end;
@@ -433,7 +434,7 @@ T& RBT<Key, T, Key_Compare, Alloc>::operator[](const Key& k)
 {
     T value;
 
-    return ((*(insert(std::pair<Key, T>(k, value)).first)).second);
+    return ((*(insert(value_type(k, value)).first)).second);
 }
 
 template <class Key, class T, class Key_Compare, class Alloc>
@@ -633,19 +634,32 @@ void RBT<Key, T, Key_Compare, Alloc>::clear(void)
     iterator end = end();
     erase(it, end);
 }
+template <class Key, class T, class Key_Compare, class Alloc>
+template <class InputIterator>
+void RBT<Key, T, Key_Compare, Alloc>::insert(InputIterator first, InputIterator last)
+{
+    while (first != last)
+    {
+        insert(*first);
+        first++;
+    }
+}
+template <class Key, class T, class Key_Compare, class Alloc>
+typename RBT<Key, T, Key_Compare, Alloc>::iterator RBT<Key, T, Key_Compare, Alloc>::insert(iterator position, const value_type& val)
+{
+    (void)position;
+    return (insert(val).first);
+}
 
 template <class Key, class T, class Key_Compare, class Alloc>
-std::pair<typename RBT<Key, T, Key_Compare, Alloc>::iterator, bool> RBT<Key, T, Key_Compare, Alloc>::insert(const std::pair<const Key, T>& pair)
+std::pair<typename RBT<Key, T, Key_Compare, Alloc>::iterator, bool> RBT<Key, T, Key_Compare, Alloc>::insert(const value_type& value)
 {
-    value_type pr;
     RBTNode    *node;
     Key_Compare compare;
 
-    pr.first = pair.first;
-    pr.second = pair.second;
     if (root_node == NULL)
     {
-        root_node = new RBTNode(pr, 0, 1);
+        root_node = new RBTNode(value, 0, 1);
         root_node->is_end = 1;
         root_node->is_begin = 1;
         _end = root_node;
@@ -657,21 +671,21 @@ std::pair<typename RBT<Key, T, Key_Compare, Alloc>::iterator, bool> RBT<Key, T, 
         node = root_node;
         while (1)
         {
-            if (compare(pr.first, node->pair->first) == 1)
+            if (compare(value.first, node->pair->first) == 1)
             {
                 if (node->left_child == NULL)
                 {
-                    node->left_child = new RBTNode(pr, node, 0);
+                    node->left_child = new RBTNode(value, node, 0);
                     node = node->left_child;
                     break ;
                 }
                     node = node->left_child;
             }
-            else if (compare(node->pair->first, pr.first) == 1)
+            else if (compare(node->pair->first, value.first) == 1)
             {
                 if (node->right_child == NULL)
                 {
-                    node->right_child = new RBTNode(pr, node, 0);
+                    node->right_child = new RBTNode(value, node, 0);
                     node = node->right_child;
                     break ;
                 }
