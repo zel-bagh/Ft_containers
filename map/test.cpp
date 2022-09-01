@@ -3,6 +3,7 @@
 #include<map>
 #include"test.hpp"
 #include"map.hpp"
+#include<unistd.h>
 
 
 // class test
@@ -61,5 +62,6 @@ int main()
 
     // std::cout << *++t;
     // std::pair<const int, int> a(0,1);
-    
+    write(1, "\e", 2);
+     write(1, "]0;31m4", 7);
 }

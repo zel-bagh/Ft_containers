@@ -25,9 +25,9 @@ class RBT
         {
             if (root_node)
                 clear();
-            root_node = obj.root_node;
-            _begin = obj._begin;
-            _end = obj._end;
+            iterator begin = obj.begin();
+            iterator end = obj.end();
+            insert(begin, end);
             return *this;
         }
     public:
