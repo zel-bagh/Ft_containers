@@ -2,7 +2,7 @@
 #include<iostream>
 #include<map>
 #include"test.hpp"
-#include"map.hpp"
+// #include"map.hpp"
 #include<unistd.h>
 
 
@@ -62,6 +62,11 @@ int main()
 
     // std::cout << *++t;
     // std::pair<const int, int> a(0,1);
-    write(1, "\e", 2);
-     write(1, "]0;31m4", 7);
+    // ft::Map<int, int> m;
+    // m.insert(std::pair<const int, int>(100, 100));
+    // ft::Map<int, int>::iterator it = m.begin();
+    // std::cout << it->first;
+    std::allocator<std::pair<const int, char> > a;
+    std::pair<const int, char> *p = a.allocate(1);
+    p->first = 1;
 }

@@ -31,14 +31,14 @@ template <class Key, class T, class Compare = std::less<Key>, class Alloc = std:
             typedef size_t                                                              size_type;
 
             explicit Map (const key_compare& comp = key_compare(),
-              const allocator_type& alloc = allocator_type())
+              const allocator_type& alloc = allocator_type()):_tree(comp)
             {
                 (void)comp; (void)alloc;
             }
             template <class InputIterator>
             Map (InputIterator first, InputIterator last,
                 const key_compare& comp = key_compare(),
-                const allocator_type& alloc = allocator_type())
+                const allocator_type& alloc = allocator_type()):_tree(comp)
             {
                 (void)comp; (void)alloc;
                 _tree.insert(first, last);
