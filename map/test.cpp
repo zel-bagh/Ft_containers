@@ -2,7 +2,7 @@
 #include<iostream>
 #include<map>
 #include"test.hpp"
-// #include"map.hpp"
+#include"map.hpp"
 #include<unistd.h>
 
 
@@ -60,13 +60,32 @@ int main()
     // test t;
     // test o;
 
-    // std::cout << *++t;
-    // std::pair<const int, int> a(0,1);
-    // ft::Map<int, int> m;
-    // m.insert(std::pair<const int, int>(100, 100));
-    // ft::Map<int, int>::iterator it = m.begin();
-    // std::cout << it->first;
-    std::allocator<std::pair<const int, char> > a;
-    std::pair<const int, char> *p = a.allocate(1);
-    p->first = 1;
+
+    ft::Map<int, int> m;
+    int i = 0;
+    while (++i <= 15)
+        m.insert(std::pair<const int, int>(i, i));
+    ft::Map<int, int>::iterator it = m.begin();
+    ft::Map<int, int>::iterator end = m.end();
+    m.erase(15);
+    m.erase(11);
+     m.erase(9);
+    m.erase(4);
+    m.erase(3);
+
+    // m.erase(88);
+    // m.erase(99);
+    it = m.begin();
+    end = m.end();
+    ft::Map<int, int>::iterator tmp;
+    while(it != end)
+    {
+        tmp = ++it; it--;
+        std::cout << "deleting " << it->first << std::endl;
+        m.erase(it->first);
+        std::cout << "deleted" << std::endl;
+        it = tmp;
+    }
+    it.show();
+
 }
