@@ -47,7 +47,7 @@ template <class Key, class T, class Compare = std::less<Key>, class Alloc = std:
             ~Map(void){}
             Map& operator= (const Map& x)
             {
-                _tree = x.tree;
+                _tree = x._tree;
                 return (*this);
             }
             //Element access:
@@ -109,16 +109,16 @@ template <class Key, class T, class Compare = std::less<Key>, class Alloc = std:
             }
             size_type count (const key_type& k) const
             {
-                return _tree.count();
+                return _tree.count(k);
             }
-            iterator lower_bound (const key_type& k) { return _tree.lower_bound(); }
-            const_iterator lower_bound (const key_type& k) const { return _tree.lower_bound(); }
-            iterator upper_bound (const key_type& k) { return _tree.upper_bound(); }
-            const_iterator upper_bound (const key_type& k) const { return _tree.upper_bound(); }
-            std::pair<iterator,iterator> equal_range (const key_type& k){ return _tree.equal_range();}
-            std::pair<const_iterator, const_iterator> equal_range (const key_type& k) const { return _tree.equal_range(); }
+            iterator lower_bound (const key_type& k) { return _tree.lower_bound(k); }
+            const_iterator lower_bound (const key_type& k) const { return _tree.lower_bound(k); }
+            iterator upper_bound (const key_type& k) { return _tree.upper_bound(k); }
+            const_iterator upper_bound (const key_type& k) const { return _tree.upper_bound(k); }
+            std::pair<iterator,iterator> equal_range (const key_type& k){ return _tree.equal_range(k);}
+            std::pair<const_iterator, const_iterator> equal_range (const key_type& k) const { return _tree.equal_range(k); }
             //Allocator:
-            allocator_type get_allocator() const { return _tree.get_allocator(); }
+            allocator_type get_allocator() const { return Alloc(); }
         private:
             RBT _tree;
     };

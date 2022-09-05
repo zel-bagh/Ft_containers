@@ -26,8 +26,8 @@ class RBT
         {
             if (root_node)
                 clear();
-            iterator begin = obj.begin();
-            iterator end = obj.end();
+            const_iterator begin = obj.begin();
+            const_iterator end = obj.end();
             insert(begin, end);
             return *this;
         }
@@ -70,8 +70,8 @@ class RBT
         {
             private:
                 RBTNode* node;
-                RBTNode** begin;
-                RBTNode** end;
+                RBTNode*const* begin;
+                RBTNode*const* end;
                 bool to_begin;
                 bool to_end;
             public:
@@ -83,7 +83,7 @@ class RBT
                     to_begin = 0;
                     to_end = 0;
                 }
-                iterator(RBTNode *obj, RBTNode** begin, RBTNode** end, bool to_begin, bool to_end)
+                iterator(RBTNode *obj, RBTNode*const* begin, RBTNode*const* end, bool to_begin, bool to_end)
                 {
                     node = obj;
                     this->begin = begin;
@@ -103,18 +103,18 @@ class RBT
                     to_end = obj.to_end;
                     return    *this;
                 }
-                pointer     operator->(void) {return (node->pair);}
-                reference   operator*(void) {return (*(node->pair));}
+                pointer     operator->(void) const {return (node->pair);}
+                reference   operator*(void) const {return (*(node->pair));}
                 iterator&    operator++(void);
                 iterator&    operator--(void);
                 iterator    operator++(int);
                 iterator    operator--(int);
-                bool    operator==(const iterator& obj);
-                bool    operator!=(const iterator& obj);
-                void show(void)
-                {
-                    std::cout << "node == " << node << "    begin == " << begin << "    end == " << end << "   to_begin == " << to_begin << "    to_end == " << to_end << std::endl;
-                }
+                bool    operator==(const iterator& obj) const;
+                bool    operator!=(const iterator& obj) const;
+                // void show(void)
+                // {
+                //     std::cout << "node == " << node << "    begin == " << begin << "    end == " << end << "   to_begin == " << to_begin << "    to_end == " << to_end << std::endl;
+                // }
         };
         class const_iterator
         {
@@ -124,17 +124,17 @@ class RBT
             const_iterator(void){};
             const_iterator(const const_iterator& obj){*this = obj;}
             const_iterator(const iterator& obj){it = obj;}
-            ~const_iterator(void);
+            ~const_iterator(void){};
             public:
             const_iterator& operator=(const const_iterator& obj){it = obj.it; return *this;}
-            const pointer     operator->(void) {return (&(*it));}
-            const reference   operator*(void) {return (*it);}
+            const pointer     operator->(void) const {return (&(*it));}
+            const reference   operator*(void) const {return (*it);}
             const_iterator&    operator++(void){++it; return *this;}
             const_iterator&    operator--(void){--it; return *this;}
             const_iterator    operator++(int){return const_iterator(it++);}
             const_iterator    operator--(int){return const_iterator(it--);}
-            bool    operator==(const const_iterator& obj){return (it == obj.it);}
-            bool    operator!=(const const_iterator& obj){return (it != obj.it);}
+            bool    operator==(const const_iterator& obj) const {return (it == obj.it);}
+            bool    operator!=(const const_iterator& obj) const {return (it != obj.it);}
         };
         class reverse_iterator
         {
@@ -144,17 +144,17 @@ class RBT
             reverse_iterator(void){};
             reverse_iterator(const reverse_iterator& obj){*this = obj;}
             reverse_iterator(const iterator& obj){it = obj;}
-            ~reverse_iterator(void);
+            ~reverse_iterator(void){};
             public:
             reverse_iterator& operator=(const reverse_iterator& obj){it = obj.it; return *this;}
-            pointer     operator->(void) {return (&(*it));}
-            reference   operator*(void) {return (*it);}
+            pointer     operator->(void) const {return (&(*it));}
+            reference   operator*(void) const {return (*it);}
             reverse_iterator&    operator++(void){--it; return *this;}
             reverse_iterator&    operator--(void){++it; return *this;}
             reverse_iterator    operator++(int){return reverse_iterator(it--);}
             reverse_iterator    operator--(int){return reverse_iterator(it++);}
-            bool    operator==(const reverse_iterator& obj){return (it == obj.it);}
-            bool    operator!=(const reverse_iterator& obj){return (it != obj.it);}
+            bool    operator==(const reverse_iterator& obj) const {return (it == obj.it);}
+            bool    operator!=(const reverse_iterator& obj) const {return (it != obj.it);}
         };
         class const_reverse_iterator
         {
@@ -164,17 +164,17 @@ class RBT
             const_reverse_iterator(void){};
             const_reverse_iterator(const reverse_iterator& obj){*this = obj;}
             const_reverse_iterator(const iterator& obj){it = obj;}
-            ~const_reverse_iterator(void);
+            ~const_reverse_iterator(void){};
             public:
             const_reverse_iterator& operator=(const const_reverse_iterator& obj){it = obj.it; return *this;}
-            const pointer     operator->(void) {return (&(*it));}
-            const reference   operator*(void) {return (*it);}
+            const pointer     operator->(void) const {return (&(*it));}
+            const reference   operator*(void) const {return (*it);}
             const_reverse_iterator&    operator++(void){--it; return *this;}
             const_reverse_iterator&    operator--(void){++it; return *this;}
             const_reverse_iterator    operator++(int){return const_reverse_iterator(it--);}
             const_reverse_iterator    operator--(int){return const_reverse_iterator(it++);}
-            bool    operator==(const const_reverse_iterator& obj){return (it == obj.it);}
-            bool    operator!=(const const_reverse_iterator& obj){return (it != obj.it);}
+            bool    operator==(const const_reverse_iterator& obj) const {return (it == obj.it);}
+            bool    operator!=(const const_reverse_iterator& obj) const{return (it != obj.it);}
         };
     public:
         class value_compare
@@ -242,13 +242,13 @@ class RBT
 //Iterator functions=================================================================================================>
 
 template <class Key, class T, class Key_Compare, class Alloc>
-bool RBT<Key, T, Key_Compare, Alloc>::iterator::operator==(const iterator& obj)
+bool RBT<Key, T, Key_Compare, Alloc>::iterator::operator==(const iterator& obj) const
 {
     return ((node == obj.node) && (begin == obj.begin) && (end == obj.end) && (to_begin == obj.to_begin) && (to_end == obj.to_end));
 }
 
 template <class Key, class T, class Key_Compare, class Alloc>
-bool RBT<Key, T, Key_Compare, Alloc>::iterator::operator!=(const iterator& obj)
+bool RBT<Key, T, Key_Compare, Alloc>::iterator::operator!=(const iterator& obj) const
 {
     return (!((node == obj.node) && (begin == obj.begin) && (end == obj.end) && (to_begin == obj.to_begin) && (to_end == obj.to_end)));
 }
@@ -363,8 +363,9 @@ typename RBT<Key, T, Key_Compare, Alloc>::iterator RBT<Key, T, Key_Compare, Allo
 template <class Key, class T, class Key_Compare, class Alloc>
 typename RBT<Key, T, Key_Compare, Alloc>::const_iterator RBT<Key, T, Key_Compare, Alloc>::end(void) const
 {
+    iterator it(NULL, &_begin, &_end, 0, 1);
     if (root_node)
-        return (const_iterator(iterator(NULL, &_begin, &_end, 0, 1)));
+        return (const_iterator());
     return (const_iterator());
 }
 
@@ -417,15 +418,14 @@ typename RBT<Key, T, Key_Compare, Alloc>::size_type RBT<Key, T, Key_Compare, All
     n = 0;
     if (root_node)
         return (0);
-    iterator it = begin();
-    iterator end = end();
-    while(it != end)
+    const_iterator it = begin();
+    const_iterator en = end();
+    while(it != en)
     {
         n++;
         it++;
     }
     return n;
-    
 }
 
 template <class Key, class T, class Key_Compare, class Alloc>
@@ -448,9 +448,9 @@ template <class Key, class T, class Key_Compare, class Alloc>
 T& RBT<Key, T, Key_Compare, Alloc>::at(const Key& k)
 {
     iterator it = begin();
-    iterator end = end();
+    iterator en = end();
     
-    while (it != end)
+    while (it != en)
     {
         if (compare((*it).first, k) == 0 && compare(k, (*it).first) == 0)
             return ((*it).second);
@@ -463,9 +463,9 @@ template <class Key, class T, class Key_Compare, class Alloc>
 const T& RBT<Key, T, Key_Compare, Alloc>::at(const Key& k) const
 {
     iterator it = begin();
-    iterator end = end();
+    iterator en = end();
     
-    while (it != end)
+    while (it != en)
     {
         if (compare((*it).first, k) == 0 && compare(k, (*it).first) == 0)
             return ((*it).second);
@@ -494,39 +494,39 @@ template <class Key, class T, class Key_Compare, class Alloc>
 typename RBT<Key, T, Key_Compare, Alloc>::iterator RBT<Key, T, Key_Compare, Alloc>::find(const Key& k)
 {
     iterator it = begin();
-    iterator end = end();
+    iterator en = end();
     
-    while (it != end)
+    while (it != en)
     {
         if (compare((*it).first, k) == 0 && compare(k, (*it).first) == 0)
             return (it);
         it++;
     }
-    return (end);
+    return (en);
 }
 
 template <class Key, class T, class Key_Compare, class Alloc>
 typename RBT<Key, T, Key_Compare, Alloc>::const_iterator RBT<Key, T, Key_Compare, Alloc>::find(const Key& k) const
 {
-    iterator it = begin();
-    iterator end = end();
+    const_iterator it = begin();
+    const_iterator en = end();
     
-    while (it != end)
+    while (it != en)
     {
         if (compare((*it).first, k) == 0 && compare(k, (*it).first) == 0)
-            return (const_iterator(it));
+            return (it);
         it++;
     }
-    return (const_iterator(end));
+    return (en);
 }
 
 template <class Key, class T, class Key_Compare, class Alloc>
 typename RBT<Key, T, Key_Compare, Alloc>::size_type RBT<Key, T, Key_Compare, Alloc>::count (const Key& k) const
 {
-    iterator it = begin();
-    iterator end = end();
-    
-    while (it != end)
+    const_iterator it = begin();
+    const_iterator en = end();
+
+    while (it != en)
     {
         if (compare((*it).first, k) == 0 && compare(k, (*it).first) == 0)
             return (1);
@@ -539,60 +539,60 @@ template <class Key, class T, class Key_Compare, class Alloc>
 typename RBT<Key, T, Key_Compare, Alloc>::iterator RBT<Key, T, Key_Compare, Alloc>::lower_bound (const Key& k)
 {
     iterator it = begin();
-    iterator end = end();
-    
-    while (it != end)
+    iterator en = end();
+
+    while (it != en)
     {
         if (compare((*it).first, k) == 0)
             return (it);
         it++;
     }
-    return (end);
+    return (en);
 }
 
 template <class Key, class T, class Key_Compare, class Alloc>
 typename RBT<Key, T, Key_Compare, Alloc>::const_iterator RBT<Key, T, Key_Compare, Alloc>::lower_bound (const Key& k) const
 {
-    iterator it = begin();
-    iterator end = end();
+    const_iterator it = begin();
+    const_iterator en = end();
     
-    while (it != end)
+    while (it != en)
     {
         if (compare((*it).first, k) == 0)
-            return (const_iterator(it));
+            return (it);
         it++;
     }
-    return (const_iterator(end));
+    return (en);
 }
 
 template <class Key, class T, class Key_Compare, class Alloc>
 typename RBT<Key, T, Key_Compare, Alloc>::iterator RBT<Key, T, Key_Compare, Alloc>::upper_bound(const Key& k)
 {
     iterator it = begin();
-    iterator end = end();
+    iterator en = end();
     
-    while (it != end)
+    while (it != en)
     {
         if (compare(k, (*it).first) == 1)
             return (it);
         it++;
     }
-    return (end);
+    return (en);
 }
 
 template <class Key, class T, class Key_Compare, class Alloc>
 typename RBT<Key, T, Key_Compare, Alloc>::const_iterator RBT<Key, T, Key_Compare, Alloc>::upper_bound(const Key& k) const
 {
-    iterator it = begin();
-    iterator end = end();
+    const_iterator it = begin();
+    const_iterator en = end();
     
-    while (it != end)
+    while (it != en)
     {
         if (compare(k, (*it).first) == 1)
-            return (const_iterator(it));
+            return (it);
         it++;
     }
-    return (const_iterator(end));
+    return (en);
 }
 
 template <class Key, class T, class Key_Compare, class Alloc>
@@ -1038,7 +1038,7 @@ void RBT<Key, T, Key_Compare, Alloc>::black_node_missing_fixing(RBTNode* node, b
                     parent->left_child->right_child->parent = parent->left_child;
                 parent->left_child->parent->left_child = parent->left_child;
                 parent->left_child = parent->left_child->parent;
-                black_node_missing_fixing(node, 0);
+                black_node_missing_fixing(node, erase);
             }
         }
         else
@@ -1080,11 +1080,6 @@ bool RBT<Key, T, Key_Compare, Alloc>::erase(const Key& k)
     }
     if (!node->right_child && !node->left_child)
     {
-        std::cout << "node " << node->pair->first << " has no children ";
-        if (node->parent)
-            std::cout << "parent is " << node->parent->pair->first << "with color" << node->parent->is_black <<  std::endl;
-        if (node->parent->right_child)
-            std::cout << "sibling is " << node->parent->right_child->pair->first << " with color " << node->parent->right_child->is_black << std::endl;
         if (!node->parent)
         {
             root_node = NULL;
@@ -1105,20 +1100,13 @@ bool RBT<Key, T, Key_Compare, Alloc>::erase(const Key& k)
                 _end = node->parent;
             }
             if (!node->is_black)
-            {
-                std::cout << " red node\n";
                 erase_rednode_nochildren(node);
-            }
             else
-            {
-                std::cout << " black node\n";
                 black_node_missing_fixing(node, 1);
-            }
         }
     }
     else if (node->right_child && node->left_child)
     {
-        std::cout << "node " << node->pair->first << " has 2 children";
         rnode = node->right_child;
         while (rnode->left_child)
             rnode = rnode->left_child;
@@ -1173,10 +1161,7 @@ bool RBT<Key, T, Key_Compare, Alloc>::erase(const Key& k)
             black_node_missing_fixing(node, 1);
     }
     else
-    {
-        std::cout << "node " << node->pair->first << " has 1 children";
         erase_blacknode_oneredchildren(node);
-    }
     return (1);
 }
 

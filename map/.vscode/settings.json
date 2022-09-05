@@ -65,6 +65,9 @@
         "__cxx_version": "cpp",
         "memory_resource": "cpp",
         "__functional_03": "cpp",
-        "__memory": "cpp"
+        "__memory": "cpp",
+        "iomanip": "cpp",
+        "numeric": "cpp",
+        "random": "cpp"
     }
 }
