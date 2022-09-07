@@ -90,7 +90,7 @@ namespace ft
         public:
         const_iterator(void){};
         const_iterator(const const_iterator& obj){*this = obj;}
-        const_iterator(const iterator_typer& obj){it = obj;}
+        const_iterator(const iterator_type& obj){it = obj;}
         ~const_iterator(void){};
         public:
         const_iterator& operator=(const const_iterator& obj){it = obj.it; return *this;}

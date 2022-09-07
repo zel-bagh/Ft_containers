@@ -1,45 +1,25 @@
 #include<memory>
 #include<iostream>
 #include<map>
-// #include"map.hpp"
+#include"map.hpp"
 #include<unistd.h>
 #include<iterator>
 #include<vector>
-// #include"tools.hpp"
+#include"tools.hpp"
 
-// class test
-// {
-//     public:
-//         int c;
-//     test()
-//     {c = 0;}
-//     test operator++(int)
-//     {
-//         test tmp;
-//         tmp.c = c;
-//         c++;
-//         return tmp;
-//     }
-//     test& operator++(void)
-//     {c++;return *this;}
-//     int operator*(void)
-//     {
-//         return (c);
-//     }
-// };
 int main () {
-  std::vector<int> myvector;
-  for (int i=0; i<10; i++) myvector.push_back(i);	// myvector: 0 1 2 3 4 5 6 7 8 9
+  // std::vector<int> myvector;
+  // for (int i=0; i<10; i++) myvector.push_back(i);	// myvector: 0 1 2 3 4 5 6 7 8 9
 
-  typedef std::vector<int>::iterator iter_type;
+  // typedef std::vector<int>::iterator iter_type;
 
-  std::reverse_iterator<iter_type> rev_it;
+  //  std::reverse_iterator<iter_type> rev_it;
+  ft::Map<int, int> m;
 
-  rev_it = myvector.end();
 //   std::cout << *(rev_it+1);
-  std::cout << *rev_it;
+  // std::cout << *rev_it;
 
-  std::cout << "The fourth element from the end is: " << *rev_it << '\n';
+  // std::cout << "The fourth element from the end is: " << *rev_it << '\n';
 
   return 0;
 }
