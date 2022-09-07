@@ -1,11 +1,11 @@
 #include<memory>
 #include<iostream>
 #include<map>
-#include"test.hpp"
-#include"map.hpp"
+// #include"map.hpp"
 #include<unistd.h>
 #include<iterator>
-
+#include<vector>
+// #include"tools.hpp"
 
 // class test
 // {
@@ -27,63 +27,31 @@
 //         return (c);
 //     }
 // };
+int main () {
+  std::vector<int> myvector;
+  for (int i=0; i<10; i++) myvector.push_back(i);	// myvector: 0 1 2 3 4 5 6 7 8 9
 
+  typedef std::vector<int>::iterator iter_type;
 
-int main()
-{
-    // RBT<int, int, std::less<int>, std::allocator<std::pair<int, int> > > rbt;
+  std::reverse_iterator<iter_type> rev_it;
 
-    // std::pair<int,int> p(50,50);
-    //     std::pair<int,int> r(100,100);
-    // std::pair<int,int> f(25,25);
-    //     std::pair<int,int> e(500,500);
+  rev_it = myvector.end();
+//   std::cout << *(rev_it+1);
+  std::cout << *rev_it;
 
+  std::cout << "The fourth element from the end is: " << *rev_it << '\n';
 
-    // rbt.insert(p);
-    // std::cout << rbt.root_node->pair->first << std::endl;
-
-    // rbt.insert(r);
-    // rbt.insert(f);
-    //     rbt.insert(e);
-    //     std::cout << rbt.root_node->pair->first << std::endl;
-    // rbt.erase(25);
-    //         std::cout << rbt.root_node->pair->first << std::endl;
-
-    // std::map<int,int> m;
-    // m.insert(std::pair<int,int>(100, 100));
-    // std::map<int, int>::iterator it = m.begin();
-    // std::map<int, int>::iterator end = m.end();
-    // if (it++ == end)
-    //     std::cout << "it got incremented before comparison" << std::endl;
-
-    // test t;
-    // test o;
-
-    RBT<int, int, std::less<int> ,   std::allocator<std::pair<const int, int> >                > m;
-    // int i = 0;
-    // while (++i <= 15)
-    //     m.insert(std::pair<const int, int>(i, i));
-    // RBT<int, int, std::less<int> ,   std::allocator<std::pair<const int, int> > >n(m);
-    RBT<int, int, std::less<int> ,   std::allocator<std::pair<const int, int> > >::const_iterator it;
-    
-    // std::cout << it->second;
-    // ft::Map<int, int>::iterator end = m.end();
-    // m.erase(15);
-    // m.erase(11);
-    //  m.erase(9);
-    // m.erase(4);
-    // m.erase(3);
-
-    // // m.erase(88);
-    // // m.erase(99);
-    // it = m.begin();
-    // end = m.end();
-    // ft::Map<int, int>::iterator tmp;
-    // while(it != end)
-    // {
-    //     tmp = ++it; it--;
-    //     m.erase(it->first);
-    //     it = tmp;
-    // }
-    // it.show();
+  return 0;
 }
+
+// int main()
+// {
+//  std::map<int, int> m;
+//  m.insert(std::pair<int, int>(1,1));
+//  m.insert(std::pair<int, int>(2,2));
+//  m.insert(std::pair<int, int>(3,3));
+//  std::map<int, int>::reverse_iterator it(m.end());
+//     it +3;
+// //  std::cout << it->first;
+// //  std::cout << (*it).second ;std::cout << "   " << (*it).first ;
+// }

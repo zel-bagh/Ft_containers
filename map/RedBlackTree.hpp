@@ -2,15 +2,17 @@
 #define RED_BLACK_TREE
 #include<functional>
 #include <stdexcept> 
-
+#include "tools.hpp"
+#include <iterator>
 template <class Key, class T, class Key_Compare, class Alloc>
 class RBT
 {
     public:
         typedef typename Alloc::reference   reference;
-        typedef typename Alloc::pointer     pointer;
-        typedef typename Alloc::value_type         value_type;
-        typedef size_t    size_type;
+        typedef typename Alloc::pointe      pointer;
+        typedef typename Alloc::value_type  value_type;
+        typedef typename reverse_iterator   reverse_iterator<iterator>;
+        typedef size_t                      size_type;
     public:
         RBT(const Key_Compare& comp = Key_Compare())
         {
@@ -66,7 +68,7 @@ class RBT
                 }
         };
     public:
-        class iterator
+        class iterator : public std::iterator<std::bidirectional_iterator_tag, value_type>
         {
             private:
                 RBTNode* node;
@@ -136,43 +138,23 @@ class RBT
             bool    operator==(const const_iterator& obj) const {return (it == obj.it);}
             bool    operator!=(const const_iterator& obj) const {return (it != obj.it);}
         };
-        class reverse_iterator
-        {
-            private:
-                iterator it;
-            public:
-            reverse_iterator(void){};
-            reverse_iterator(const reverse_iterator& obj){*this = obj;}
-            reverse_iterator(const iterator& obj){it = obj;}
-            ~reverse_iterator(void){};
-            public:
-            reverse_iterator& operator=(const reverse_iterator& obj){it = obj.it; return *this;}
-            pointer     operator->(void) const {return (&(*it));}
-            reference   operator*(void) const {return (*it);}
-            reverse_iterator&    operator++(void){--it; return *this;}
-            reverse_iterator&    operator--(void){++it; return *this;}
-            reverse_iterator    operator++(int){return reverse_iterator(it--);}
-            reverse_iterator    operator--(int){return reverse_iterator(it++);}
-            bool    operator==(const reverse_iterator& obj) const {return (it == obj.it);}
-            bool    operator!=(const reverse_iterator& obj) const {return (it != obj.it);}
-        };
         class const_reverse_iterator
         {
             private:
-                iterator it;
+                reverse_iterator it;
             public:
             const_reverse_iterator(void){};
-            const_reverse_iterator(const reverse_iterator& obj){*this = obj;}
-            const_reverse_iterator(const iterator& obj){it = obj;}
+            const_reverse_iterator(const const_reverse_iterator& obj){*this = obj;}
+            const_reverse_iterator(const reverse_iterator& obj){it = obj;}
             ~const_reverse_iterator(void){};
             public:
             const_reverse_iterator& operator=(const const_reverse_iterator& obj){it = obj.it; return *this;}
             const pointer     operator->(void) const {return (&(*it));}
             const reference   operator*(void) const {return (*it);}
-            const_reverse_iterator&    operator++(void){--it; return *this;}
-            const_reverse_iterator&    operator--(void){++it; return *this;}
-            const_reverse_iterator    operator++(int){return const_reverse_iterator(it--);}
-            const_reverse_iterator    operator--(int){return const_reverse_iterator(it++);}
+            const_reverse_iterator&    operator++(void){++it; return *this;}
+            const_reverse_iterator&    operator--(void){--it; return *this;}
+            const_reverse_iterator    operator++(int){return const_reverse_iterator(it++);}
+            const_reverse_iterator    operator--(int){return const_reverse_iterator(it--);}
             bool    operator==(const const_reverse_iterator& obj) const {return (it == obj.it);}
             bool    operator!=(const const_reverse_iterator& obj) const{return (it != obj.it);}
         };
@@ -355,18 +337,13 @@ typename RBT<Key, T, Key_Compare, Alloc>::const_iterator RBT<Key, T, Key_Compare
 template <class Key, class T, class Key_Compare, class Alloc>
 typename RBT<Key, T, Key_Compare, Alloc>::iterator RBT<Key, T, Key_Compare, Alloc>::end(void)
 {
-    if (root_node)
-        return (iterator(NULL, &_begin, &_end, 0, 1));
-    return (iterator());
+    return (iterator(NULL, &_begin, &_end, 0, 1));
 }
 
 template <class Key, class T, class Key_Compare, class Alloc>
 typename RBT<Key, T, Key_Compare, Alloc>::const_iterator RBT<Key, T, Key_Compare, Alloc>::end(void) const
 {
-    iterator it(NULL, &_begin, &_end, 0, 1);
-    if (root_node)
-        return (const_iterator());
-    return (const_iterator());
+    return (const_iterator(iterator(NULL, &_begin, &_end, 0, 1)));
 }
 
 template <class Key, class T, class Key_Compare, class Alloc>
@@ -388,17 +365,13 @@ typename RBT<Key, T, Key_Compare, Alloc>::const_reverse_iterator RBT<Key, T, Key
 template <class Key, class T, class Key_Compare, class Alloc>
 typename RBT<Key, T, Key_Compare, Alloc>::reverse_iterator RBT<Key, T, Key_Compare, Alloc>::rend(void)
 {
-    if (root_node)
-        return (reverse_iterator(iterator(NULL, &_begin, &_end, 1, 0)));
-    return (reverse_iterator());
+    return (reverse_iterator(iterator(NULL, &_begin, &_end, 1, 0)));
 }
 
 template <class Key, class T, class Key_Compare, class Alloc>
 typename RBT<Key, T, Key_Compare, Alloc>::const_reverse_iterator RBT<Key, T, Key_Compare, Alloc>::rend(void) const
 {
-    if (root_node)
-        return (const_reverse_iterator(iterator(NULL, &_begin, &_end, 1, 0)));
-    return (const_reverse_iterator());
+    return (const_reverse_iterator(iterator(NULL, &_begin, &_end, 1, 0)));
 }
 //Capacity=====================================================================================================================>
 
