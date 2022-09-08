@@ -6,32 +6,48 @@
 #include<iterator>
 #include<vector>
 #include"tools.hpp"
+#include<time.h>
+#include <ctime>
+#include <sys/time.h>
 
-int main () {
-  // std::vector<int> myvector;
-  // for (int i=0; i<10; i++) myvector.push_back(i);	// myvector: 0 1 2 3 4 5 6 7 8 9
+#define TIME_FAC 3
+time_t get_time(void)
+{
+    struct timeval time_now;
 
-  // typedef std::vector<int>::iterator iter_type;
+    gettimeofday(&time_now, NULL);
+    time_t msecs_time = (time_now.tv_sec * 1e3) + (time_now.tv_usec / 1e3);
+    return (msecs_time);
+}
+void testMapConstructors()
+{
+  
+            time_t start, end, diff;
+            /*------------------ std::maps ---------------------*/
+            std::map<int, std::string> m1;
+            ft::Map<int, std::string> ft_m1;
+            for (size_t i = 0; i < 1e6; i++)
+            {
+                m1.insert(std::make_pair(i, "string2"));
+                ft_m1.insert(std::make_pair(i, "string2"));
+            }
 
-  //  std::reverse_iterator<iter_type> rev_it;
-  ft::Map<int, int> m;
-
-//   std::cout << *(rev_it+1);
-  // std::cout << *rev_it;
-
-  // std::cout << "The fourth element from the end is: " << *rev_it << '\n';
-
-  return 0;
+            start = get_time();
+            m1.size();
+            end = get_time();
+            diff = end - start;
+            std::cout << diff << std::endl;
+            diff = (diff) ? (diff * TIME_FAC) : TIME_FAC;
+            std::cout << diff << std::endl;
+            /*-----------------------------------------------------*/
+            /*------------------ ft::Maps ---------------------*/
+            ualarm(diff * 1e3, 0);
+            ft_m1.size();
+            ualarm(0, 0);
+            /*----------------------------------------------------*/
 }
 
-// int main()
-// {
-//  std::map<int, int> m;
-//  m.insert(std::pair<int, int>(1,1));
-//  m.insert(std::pair<int, int>(2,2));
-//  m.insert(std::pair<int, int>(3,3));
-//  std::map<int, int>::reverse_iterator it(m.end());
-//     it +3;
-// //  std::cout << it->first;
-// //  std::cout << (*it).second ;std::cout << "   " << (*it).first ;
-// }
+int main()
+{
+  testMapConstructors();
+}
