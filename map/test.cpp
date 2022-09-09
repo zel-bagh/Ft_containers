@@ -33,21 +33,20 @@ void testMapConstructors()
             }
 
             start = get_time();
-            m1.size();
+            m1.lower_bound(1e5);
             end = get_time();
             diff = end - start;
-            std::cout << diff << std::endl;
             diff = (diff) ? (diff * TIME_FAC) : TIME_FAC;
-            std::cout << diff << std::endl;
             /*-----------------------------------------------------*/
             /*------------------ ft::Maps ---------------------*/
             ualarm(diff * 1e3, 0);
-            ft_m1.size();
+            ft_m1.lower_bound(1e5);
             ualarm(0, 0);
             /*----------------------------------------------------*/
 }
 
 int main()
+
 {
   testMapConstructors();
 }
