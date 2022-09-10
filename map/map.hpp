@@ -21,8 +21,6 @@ template <class Key, class T, class Compare = std::less<Key>, class Alloc = std:
             typedef typename allocator_type::value_type                                 value_type;
             typedef RBT<key_type, mapped_type, key_compare, allocator_type>             RBT;
             typedef typename RBT::value_compare                                         value_compare;
-            // typedef ft::RBTNode<value_type>                                             node;
-            // typedef node*                                                               nodePointer;
             typedef typename RBT::iterator                                              iterator;
             typedef typename RBT::const_iterator                                        const_iterator;
             typedef typename RBT::reverse_iterator                                      reverse_iterator;

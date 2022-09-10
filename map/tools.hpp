@@ -117,71 +117,29 @@ namespace ft
         bool    operator==(const const_iterator& obj) const {return (it == obj.it);}
         bool    operator!=(const const_iterator& obj) const {return (it != obj.it);}
     };
-    // template<class Iterator>
-    // class const_reverse_iterator
+    // template <class T1,class T2>
+    // struct pair
     // {
-    //     public:
-    //     typedef Iterator                                                iterator_type;
-    //     typedef typename iterator_traits<Iterator>::iterator_category   iterator_category;
-    //     typedef typename iterator_traits<Iterator>::value_type          value_type;
-    //     typedef typename iterator_traits<Iterator>::pointer             pointer;
-    //     typedef typename iterator_traits<Iterator>::reference           reference;
-    //     typedef typename iterator_traits<Iterator>::difference_type     difference_type;
-    //     private:
-    //         iterator_type it;
-    //     public:
-    //     reverse_iterator(void){}
-    //     reverse_iterator(const reverse_iterator& obj){*this = obj;}
-    //     reverse_iterator(const iterator_type& obj){it = obj;}
-    //     ~reverse_iterator(void){};
-    //     public:
-    //     iterator_type base() const {return (iterator_type(it));}
-    //     public:
-    //     reverse_iterator& operator=(const reverse_iterator& obj){it = obj.it; return *this;}
-    //     pointer     operator->(void) const 
-    //     {
-    //         // iterator_type tmp(it);
-    //         // --tmp;
-    //         // tmp.show();
-    //         // *tmp;exit(1);
-    //         // return (&(*(tmp)));
-    //         return &(*(it));
-    //     }
-    //     reference   operator*(void) const 
-    //     {
-    //         // iterator_type tmp(it);
-    //         // return (*(--tmp));
-    //         return *it;
-    //     }
-    //     reverse_iterator&    operator++(void){--it; return *this;}
-    //     reverse_iterator&    operator--(void){++it; return *this;}
-    //     reverse_iterator    operator++(int){return reverse_iterator(it--);}
-    //     reverse_iterator    operator--(int){return reverse_iterator(it++);}
-    //     reverse_iterator    operator+(difference_type n) const
-    //     {
-    //         return reverse_iterator(it-n);
-    //     }
-    //     reverse_iterator    operator-(difference_type n) const
-    //     {
-    //         return reverse_iterator(it+n);
-    //     }
-    //     reverse_iterator& operator+= (difference_type n)
-    //     {
-    //         it -= n;
-    //         return *this;
-    //     }
-    //     reverse_iterator& operator-= (difference_type n)
-    //     {
-    //         it += n;
-    //         return *this;
-    //     }
-    //     reference operator[] (difference_type n) const
-    //     {
-    //         return it[-n-1];
-    //     }
-    //     bool    operator==(const reverse_iterator& obj) const {return (it == obj.it);}
-    //     bool    operator!=(const reverse_iterator& obj) const {return (it != obj.it);}
-    // };
+    //     typedef T1 first_type;
+    //     typedef T2 second_type;
 
-}   
+    //     first_type first;
+    //     second_type second;
+
+    //     public:
+    //     pair(void){};
+    //     pair (const first_type& a, const second_type& b)
+    //     {
+    //         first = a;
+    //         second = b;
+    //     }
+    //     pair(const pair& obj) {*this = obj;}
+    //     public:
+    //     pair& operator=(const pair&obj)
+    //     {
+    //         first = obj.first;
+    //         second = obj.second;
+    //     }
+    // };
+}
 #endif
