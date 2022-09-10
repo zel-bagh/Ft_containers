@@ -4,6 +4,7 @@
 #include <stdexcept> 
 #include "tools.hpp"
 #include <iterator>
+#include <iostream>
 template <class Key, class T, class Key_Compare, class Alloc>
 class RBT
 {
@@ -1043,8 +1044,8 @@ void RBT<Key, T, Key_Compare, Alloc>::black_node_missing_fixing(RBTNode* node, b
                     delete node;
                 }
             }
-            else if (parent->left_child->left_child && !parent->left_child->left_child->is_black &&
-                (!parent->left_child->right_child || (parent->left_child->right_child && parent->left_child->right_child->is_black)))
+            else if (parent->left_child->right_child && !parent->left_child->right_child->is_black &&
+                (!parent->left_child->left_child || (parent->left_child->left_child && parent->left_child->left_child->is_black)))
             {
                 parent->left_child->right_child->is_black = 1;
                 parent->left_child->is_black = 0;
@@ -1087,6 +1088,7 @@ bool RBT<Key, T, Key_Compare, Alloc>::erase(const Key& k)
     RBTNode *node = root_node;
     RBTNode *rnode;
     bool color;
+
     if (!node)
         return (0);
     while (compare(k, node->pair->first) || compare(node->pair->first, k))
