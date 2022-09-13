@@ -373,35 +373,35 @@ T& RBT<Key, T, Key_Compare, Alloc>::operator[](const Key& k)
     return ((*(insert(value_type(k, value)).first)).second);
 }
 
-template <class Key, class T, class Key_Compare, class Alloc>
-T& RBT<Key, T, Key_Compare, Alloc>::at(const Key& k)
-{
-    iterator it = begin();
-    iterator en = end();
+// template <class Key, class T, class Key_Compare, class Alloc>
+// T& RBT<Key, T, Key_Compare, Alloc>::at(const Key& k)
+// {
+//     iterator it = begin();
+//     iterator en = end();
     
-    while (it != en)
-    {
-        if (compare((*it).first, k) == 0 && compare(k, (*it).first) == 0)
-            return ((*it).second);
-        it++;
-    }
-    throw (std::out_of_range("key not found"));
-}
+//     while (it != en)
+//     {
+//         if (compare((*it).first, k) == 0 && compare(k, (*it).first) == 0)
+//             return ((*it).second);
+//         it++;
+//     }
+//     throw (std::out_of_range("key not found"));
+// }
 
-template <class Key, class T, class Key_Compare, class Alloc>
-const T& RBT<Key, T, Key_Compare, Alloc>::at(const Key& k) const
-{
-    iterator it = begin();
-    iterator en = end();
+// template <class Key, class T, class Key_Compare, class Alloc>
+// const T& RBT<Key, T, Key_Compare, Alloc>::at(const Key& k) const
+// {
+//     iterator it = begin();
+//     iterator en = end();
     
-    while (it != en)
-    {
-        if (compare((*it).first, k) == 0 && compare(k, (*it).first) == 0)
-            return ((*it).second);
-        it++;
-    }
-    throw (std::out_of_range("key not found"));
-}
+//     while (it != en)
+//     {
+//         if (compare((*it).first, k) == 0 && compare(k, (*it).first) == 0)
+//             return ((*it).second);
+//         it++;
+//     }
+//     throw (std::out_of_range("key not found"));
+// }
 
 //Observers==============================================================================================================================>
 
