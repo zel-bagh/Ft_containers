@@ -124,6 +124,13 @@ class vector
             void insert (iterator position, InputIterator first, InputIterator last);
         iterator erase (iterator position);
         iterator erase (iterator first, iterator last);
+        template <class InputIterator>
+            void assign (InputIterator first, InputIterator last);
+        void assign (size_type n, const value_type& val);
+        void pop_back();
+        void push_back (const value_type& val);
+        void swap (vector& x);
+        void clear();
     public: //Iterators:
         iterator begin(void);
         const_iterator begin(void) const;
@@ -497,16 +504,101 @@ typename vector<T, Alloc>::iterator vector<T, Alloc>::erase(iterator first, iter
             j = i;
             while (_begin + i != last.base() && i != _size)
                 ((allocator_type&)_alloc).destroy(_begin + i++);
-            while (i < _size)
-                ((allocator_type&)_alloc).construct(_begin + j++, _begin + i++);
-            _size -= 1;
-            i--;
-            while (++i < _size - 1)
-                ((allocator_type&)_alloc).construct(_begin + i, _begin + i + 1);
+            if (j != i)
+                while (i < _size)
+                    ((allocator_type&)_alloc).construct(_begin + j++, _begin + i++);
+            _size -= i - j;
+            return iterator(first.base());
         }
     }
+    return iterator(NULL);
 }
-
+template <class T, class Alloc>
+template <class InputIterator>
+void vector<T, Alloc>::assign(InputIterator first, InputIterator last)
+{
+    int n = 0;
+    int i ;
+    while (first != last)
+        n++;
+    if (_capacity < n)
+    {
+        if (_begin)
+        {
+           ((allocator_type&)_alloc).deallocate(_begin, _capacity);
+           _begin = NULL;
+           _capacity = NULL;
+           _size = NULL;
+        }
+        insert(first, last); 
+    }
+    else
+    {
+        for (i = 0; i < _size; i++)
+            ((allocator_type&)_alloc).destroy(_begin + i);
+        for (i = 0; first != last; first++)
+            ((allocator_type&)_alloc).allocate(_begin + i++, *first);
+        _size = n;
+    }
+}
+template <class T, class Alloc>
+void vector<T, Alloc>::assign(size_type n, const value_type& val)
+{
+    int i;
+    if (_capacity < n)
+    {
+        if (_begin)
+        {
+           ((allocator_type&)_alloc).deallocate(_begin, _capacity);
+           _begin = NULL;
+           _capacity = NULL;
+           _size = NULL;
+        }
+        insert(iterator(NULL), n, val);
+    }
+    else
+    {
+        for (i = 0; i < _size; i++)
+            ((allocator_type&)_alloc).destroy(_begin + i);
+        for (i = 0; i < n; i++)
+            ((allocator_type&)_alloc).allocate(_begin + i++, val);
+        _size = n;
+    }
+}
+template <class T, class Alloc>
+void vector<T, Alloc>::push_back(const value_type& val)
+{
+    insert(end(), val);
+}
+template <class T, class Alloc>
+void vector<T, Alloc>::pop_back()
+{
+    erase(end());
+}
+template <class T, class Alloc>
+void vector<T, Alloc>::swap(vector& x)
+{
+    pointer tmp = _begin;
+    size_type s = _size;
+    _begin = x._begin;
+    x._begin = tmp;
+    _size = x._size;
+    x._size = s;
+    s = _capacity;
+    _capacity = x._capacity;
+    x._capacity = s;
+}
+template <class T, class Alloc>
+void vector<T, Alloc>::clear()
+{
+    if (_begin)
+    {
+        (allocator_type&)_alloc.deallocate(_begin, _capacity);
+        _begin = NULL;
+        _capacity = 0;
+        _size = 0;
+    }
+}
 }
 
 

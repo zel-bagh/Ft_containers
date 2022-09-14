@@ -39,15 +39,15 @@ int main()
       int t[11] = {0,1,2,3,100,5,6,7,8,9,10};
       int p[11] = {1,100,6,103,104,105,106,107,108,109,110};
 
-   std::vector<int> v (t, t + 10);
-   v.insert(v.end(), 252);
+   std::vector<int> v (t,t+10);
+   v.assign(t, t);
    // std::cout << v.begin().base() << std::endl;
-   v.erase(--v.begin(), v.end());
+   // std::cout << *(v.erase(v.begin(), v.begin()));
    // std::cout << v.begin().base() << std::endl;
-   // show(v);
+   show(v);
 
 
-   // std::cout << v.capacity() << std::endl;
-   // std::cout << v.size() << std::endl;
+   std::cout << v.capacity() << std::endl;
+   std::cout << v.size() << std::endl;
 
 }
