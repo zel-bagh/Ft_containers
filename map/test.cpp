@@ -21,33 +21,36 @@ void  show(std::vector<int>& v)
       std::cout << *(it++) << std::endl;
    std::cout << "========================================="<< std::endl;
 }
-template <class T>
-void to(T& a)
-{
-   a.~T();
-}
-class test
-{
-   public:
-   int a;
-   test(){a = 7;}
-   ~test(){std::cout << "test destructor" << std::endl;}
-};
 
+template<bool B, class T = void>
+struct enable_if {};
+ 
+template<class T>
+struct enable_if<true, T> { typedef T type; };
 int main()
 {
-      int t[11] = {0,1,2,3,100,5,6,7,8,9,10};
-      int p[11] = {1,100,6,103,104,105,106,107,108,109,110};
+        /*------------------ std::vectors ---------------------*/
+        std::vector<std::string> v1(1, "string2");
+        std::vector<std::string> const v2(10, "string2");
+        /*-----------------------------------------------------*/
+        /*------------------ ft::vectors ---------------------*/
+        ft::Vector<std::string> ft_v1(10, "string2");
+        ft::Vector<std::string> const ft_v2(10, "string2");
+        /*----------------------------------------------------*/
+        /*------------------ strings to store the results ----*/
+        std::string res, ft_res, c_res, c_ft_res;
+        /*----------------------------------------------------*/
+        std::vector<std::string>::reverse_iterator it = v1.rbegin();
+         std::cout <<  *(it);
+      //   for (std::vector<std::string>::reverse_iterator rit = v1.rbegin(); rit != v1.rend(); ++rit) // fill res from v1
+      //       res += *rit;
+      //   for (std::vector<std::string>::const_reverse_iterator rit = v2.rbegin(); rit != v2.rend(); ++rit) // fill c_res from const v1
+      //       c_res += *rit;
 
-   std::vector<int> v (t,t+10);
-   v.assign(t, t);
-   // std::cout << v.begin().base() << std::endl;
-   // std::cout << *(v.erase(v.begin(), v.begin()));
-   // std::cout << v.begin().base() << std::endl;
-   show(v);
+      //   for (ft::Vector<std::string>::reverse_iterator rit = ft_v1.rbegin(); rit != --ft_v1.rend(); ++rit) // fill ft_res from ft_v1
+      //       ft_res += *rit;
+      //   for (ft::Vector<std::string>::const_reverse_iterator rit = ft_v2.rbegin(); rit != ft_v2.rend(); ++rit) // fill c_ft_res from const ft_v1
+      //       c_ft_res += *rit;
 
-
-   std::cout << v.capacity() << std::endl;
-   std::cout << v.size() << std::endl;
 
 }

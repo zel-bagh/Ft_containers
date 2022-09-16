@@ -5,7 +5,7 @@
 
 namespace ft
 {
-template <class Key, class T, class Compare = std::less<Key>, class Alloc = std::allocator<std::pair<const Key,T> > >
+template <class Key, class T, class Compare = std::less<Key>, class Alloc = std::allocator<ft::pair<const Key,T> > >
     class Map
     {
         public:
@@ -54,7 +54,7 @@ template <class Key, class T, class Compare = std::less<Key>, class Alloc = std:
             }
 
             //Modifiers:
-            std::pair<iterator, bool> insert (const value_type& val)
+            ft::pair<iterator, bool> insert (const value_type& val)
             {
                 return (_tree.insert(val));
             }
@@ -112,8 +112,8 @@ template <class Key, class T, class Compare = std::less<Key>, class Alloc = std:
             const_iterator lower_bound (const key_type& k) const { return _tree.lower_bound(k); }
             iterator upper_bound (const key_type& k) { return _tree.upper_bound(k); }
             const_iterator upper_bound (const key_type& k) const { return _tree.upper_bound(k); }
-            std::pair<iterator,iterator> equal_range (const key_type& k){ return _tree.equal_range(k);}
-            std::pair<const_iterator, const_iterator> equal_range (const key_type& k) const { return _tree.equal_range(k); }
+            ft::pair<iterator,iterator> equal_range (const key_type& k){ return _tree.equal_range(k);}
+            ft::pair<const_iterator, const_iterator> equal_range (const key_type& k) const { return _tree.equal_range(k); }
             //Allocator:
             allocator_type get_allocator() const { return Alloc(); }
         private:

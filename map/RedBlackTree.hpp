@@ -5,6 +5,7 @@
 #include "tools.hpp"
 #include <iterator>
 #include <iostream>
+#include "pair.hpp"
 template <class Key, class T, class Key_Compare, class Alloc>
 class RBT
 {
@@ -136,7 +137,7 @@ class RBT
               }
         };
     public: //Modifiers:
-        std::pair<iterator, bool> insert(const value_type& value);
+        ft::pair<iterator, bool> insert(const value_type& value);
         iterator insert (iterator position, const value_type& val); 
         template <class InputIterator>
             void insert (InputIterator first, InputIterator last);
@@ -153,8 +154,8 @@ class RBT
         const_iterator lower_bound (const Key& k) const;
         iterator upper_bound (const Key& k);
         const_iterator upper_bound (const Key& k) const;
-        std::pair<const_iterator,const_iterator> equal_range (const Key& k) const;
-        std::pair<iterator,iterator>             equal_range (const Key& k);
+        ft::pair<const_iterator,const_iterator> equal_range (const Key& k) const;
+        ft::pair<iterator,iterator>             equal_range (const Key& k);
     public: //Iterators
         iterator begin(void);
         const_iterator begin(void) const;
@@ -604,15 +605,15 @@ typename RBT<Key, T, Key_Compare, Alloc>::const_iterator RBT<Key, T, Key_Compare
 }
 
 template <class Key, class T, class Key_Compare, class Alloc>
-std::pair<typename RBT<Key, T, Key_Compare, Alloc>::iterator,typename RBT<Key, T, Key_Compare, Alloc>::iterator> RBT<Key, T, Key_Compare, Alloc>::equal_range(const Key& k)
+ft::pair<typename RBT<Key, T, Key_Compare, Alloc>::iterator,typename RBT<Key, T, Key_Compare, Alloc>::iterator> RBT<Key, T, Key_Compare, Alloc>::equal_range(const Key& k)
 {
-    return (std::pair<iterator, iterator> (lower_bound(k), upper_bound(k)));
+    return (ft::pair<iterator, iterator> (lower_bound(k), upper_bound(k)));
 }
 
 template <class Key, class T, class Key_Compare, class Alloc>
-std::pair<typename RBT<Key, T, Key_Compare, Alloc>::const_iterator,typename RBT<Key, T, Key_Compare, Alloc>::const_iterator> RBT<Key, T, Key_Compare, Alloc>::equal_range(const Key& k) const
+ft::pair<typename RBT<Key, T, Key_Compare, Alloc>::const_iterator,typename RBT<Key, T, Key_Compare, Alloc>::const_iterator> RBT<Key, T, Key_Compare, Alloc>::equal_range(const Key& k) const
 {
-    return (std::pair<const_iterator, const_iterator> (lower_bound(k), upper_bound(k)));
+    return (ft::pair<const_iterator, const_iterator> (lower_bound(k), upper_bound(k)));
 }
 
 //Modifiers==============================================================================================================================>
@@ -666,7 +667,7 @@ typename RBT<Key, T, Key_Compare, Alloc>::iterator RBT<Key, T, Key_Compare, Allo
 }
 
 template <class Key, class T, class Key_Compare, class Alloc>
-std::pair<typename RBT<Key, T, Key_Compare, Alloc>::iterator, bool> RBT<Key, T, Key_Compare, Alloc>::insert(const value_type& value)
+ft::pair<typename RBT<Key, T, Key_Compare, Alloc>::iterator, bool> RBT<Key, T, Key_Compare, Alloc>::insert(const value_type& value)
 {
     RBTNode    *node;
 
@@ -678,7 +679,7 @@ std::pair<typename RBT<Key, T, Key_Compare, Alloc>::iterator, bool> RBT<Key, T, 
         root_node->is_begin = 1;
         _end = root_node;
         _begin = root_node;
-        return (std::pair<iterator, bool> (iterator(root_node, &_begin, &_end, 0, 0), 1));
+        return (ft::pair<iterator, bool> (iterator(root_node, &_begin, &_end, 0, 0), 1));
     }
     else
     {
@@ -706,7 +707,7 @@ std::pair<typename RBT<Key, T, Key_Compare, Alloc>::iterator, bool> RBT<Key, T, 
                     node = node->right_child;
             }
             else
-                return (std::pair<iterator, bool> (iterator(node, &_begin, &_end, 0, 0), 0));
+                return (ft::pair<iterator, bool> (iterator(node, &_begin, &_end, 0, 0), 0));
         }
         _size++;
         if (node->parent->right_child == node && node->parent->is_end)
@@ -723,7 +724,7 @@ std::pair<typename RBT<Key, T, Key_Compare, Alloc>::iterator, bool> RBT<Key, T, 
         }
         if (!node->parent->is_black)
             two_adjacent_red_nodes_fixing(node);
-        return (std::pair<iterator, bool> (iterator(node, &_begin, &_end, 0, 0), 1));
+        return (ft::pair<iterator, bool> (iterator(node, &_begin, &_end, 0, 0), 1));
     }
 }
 template <class Key, class T, class Key_Compare, class Alloc>
