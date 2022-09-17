@@ -402,24 +402,20 @@ typename Vector<T, Alloc>::iterator Vector<T, Alloc>::insert(typename Vector<T, 
         _size = 1;
         return iterator(_begin);
     }
-    if (_capacity - _size < 1)
+    if (_capacity == _size)
     {
         pointer tmp = ((allocator_type&)_alloc).allocate(_capacity * 2);
         for (; _begin + i != position.base() && i != _size; i++)
              ((allocator_type&)_alloc).construct(tmp + i, *(_begin + i));
+        j = i;
         ((allocator_type&)_alloc).construct(tmp + i, val);
-        for (j = _size - i; j > 0; j--)
-        {
+        for (;i < _size; i++)
             ((allocator_type&)_alloc).construct(tmp + i + 1, *(_begin + i));
-            i++;
-        }
         ((allocator_type&)_alloc).deallocate(_begin, _capacity);
         _begin = tmp;
         _capacity *= 2;
         _size += 1;
-        if (i == _size - 1)
-            return iterator((_begin + _size - 1));
-        return iterator((_begin + i));
+        return iterator((_begin + j));
     }
     while(_begin + i != position.base() && i != _size)
         i++;
@@ -437,45 +433,51 @@ void Vector<T, Alloc>::insert(typename Vector<T, Alloc>::iterator position,typen
     size_type j;
     size_type k;
     pointer tmp;
-    if (_capacity == 0)
+    if (n != 0)
     {
-        _begin = ((allocator_type&)_alloc).allocate(n);
-        while (i < n)
-            ((allocator_type&)_alloc).construct(_begin + i++, val);
-        _capacity = n;
-    }
-    else if (_capacity - _size < n)
-    {
-        if ((_capacity * 2) - _size >= n)
-            tmp = ((allocator_type&)_alloc).allocate(_capacity * 2);
+        if (_capacity == 0)
+        {
+            _begin = ((allocator_type&)_alloc).allocate(n);
+            while (i < n)
+                ((allocator_type&)_alloc).construct(_begin + i++, val);
+            _capacity = n;
+        }
+        else if (_capacity - _size < n)
+        {
+            if ((_capacity * 2) - _size >= n)
+                tmp = ((allocator_type&)_alloc).allocate(_capacity * 2);
+            else
+                tmp = ((allocator_type&)_alloc).allocate(_capacity + n);
+            for (; _begin + i != position.base() && i != _size; i++)
+                 ((allocator_type&)_alloc).construct(tmp + i, *(_begin + i));
+            for(j = n; j > 0; j--)
+                ((allocator_type&)_alloc).construct(tmp + i++, val);
+            j = i - n;
+            for (; j < _size; j++)
+                ((allocator_type&)_alloc).construct(tmp + i++, *(_begin + j));
+            ((allocator_type&)_alloc).deallocate(_begin, _capacity);
+            _begin = tmp;
+            if ((_capacity * 2) - _size >= n)
+                _capacity *= 2;
+            else
+                _capacity += n;
+        }
         else
-            tmp = ((allocator_type&)_alloc).allocate(_capacity + n);
-        for (; _begin + i != position.base() && i != _size; i++)
-             ((allocator_type&)_alloc).construct(tmp + i, *(_begin + i));
-        for(j = n; j > 0; j--)
-            ((allocator_type&)_alloc).construct(tmp + i++, val);
-        j = i - n;
-        for (k = _size - j; k > 0; k--)
-            ((allocator_type&)_alloc).construct(tmp + i++, *(_begin + j++));
-        ((allocator_type&)_alloc).deallocate(_begin, _capacity);
-        _begin = tmp;
-        if ((_capacity * 2) - _size >= n)
-            _capacity *= 2;
-        else
-            _capacity += n;
+        {
+            while(_begin + i != position.base() && i != _size)
+                i++;
+            j = _size + n - 1;
+            k = _size - i + 1;
+            while (--k > 0)
+            {
+                ((allocator_type&)_alloc).construct(_begin + j, *(_begin + j - n));
+                j--;
+            }
+            for (j = n; j > 0; j--)
+                ((allocator_type&)_alloc).construct(_begin + i++, val);
+        }
+        _size += n;
     }
-    else
-    {
-        while(_begin + i != position.base() && i != _size)
-            i++;
-        j = _size + n;
-        k = _size - i;
-        while (k > 0)
-            ((allocator_type&)_alloc).construct(_begin + j, *(_begin + j - n));
-        for (j = n; j > 0; j--)
-            ((allocator_type&)_alloc).construct(_begin + i++, val);
-    }
-    _size += n;
 }
 template <class T, class Alloc>
 template <class InputIterator>
@@ -489,54 +491,60 @@ void Vector<T, Alloc>::insert (typename Vector<T, Alloc>::iterator position, Inp
     InputIterator t = first;
     while (t++ != last)
         n++;
-    if (_capacity == 0)
+    if (n != 0)
     {
-        _begin = ((allocator_type&)_alloc).allocate(n);
-        while (i < n)
+        if (_capacity == 0)
         {
-            ((allocator_type&)_alloc).construct(_begin + i++, (*first));
-            first++;
+            _begin = ((allocator_type&)_alloc).allocate(n);
+            while (i < n)
+            {
+                ((allocator_type&)_alloc).construct(_begin + i++, (*first));
+                first++;
+            }
+            _capacity = n;
         }
-        _capacity = n;
-    }
-    else if (_capacity - _size < n)
-    {
-        if ((_capacity * 2) - _size >= n)
-            tmp = ((allocator_type&)_alloc).allocate(_capacity * 2);
+        else if (_capacity - _size < n)
+        {
+            if ((_capacity * 2) - _size >= n)
+                tmp = ((allocator_type&)_alloc).allocate(_capacity * 2);
+            else
+                tmp = ((allocator_type&)_alloc).allocate(_capacity + n);
+            for (; _begin + i != position.base() && i != _size; i++)
+                 ((allocator_type&)_alloc).construct(tmp + i, *(_begin + i));
+            for(j = n; j > 0; j--)
+            {
+                ((allocator_type&)_alloc).construct(tmp + i++, (*first));
+                first++;
+            }
+            j = i - n;
+            for (; j < _size; j++)
+                ((allocator_type&)_alloc).construct(tmp + i++, *(_begin + j));
+            ((allocator_type&)_alloc).deallocate(_begin, _capacity);
+            _begin = tmp;
+            if ((_capacity * 2) - _size >= n)
+                _capacity *= 2;
+            else
+                _capacity += n;
+        }
         else
-            tmp = ((allocator_type&)_alloc).allocate(_capacity + n);
-        for (; _begin + i != position.base() && i != _size; i++)
-             ((allocator_type&)_alloc).construct(tmp + i, *(_begin + i));
-        for(j = n; j > 0; j--)
         {
-            ((allocator_type&)_alloc).construct(tmp + i++, (*first));
-            first++;
+            while(_begin + i != position.base() && i != _size)
+                i++;
+            j = _size + n - 1;
+            k = _size - i + 1;
+            while (--k > 0)
+            {
+                ((allocator_type&)_alloc).construct(_begin + j, *(_begin + j - n));
+                j--;
+            }
+            for (j = n; j > 0; j--)
+            {
+                ((allocator_type&)_alloc).construct(_begin + i++, (*first));
+                first++;
+            }
         }
-        j = i - n;
-        for (k = _size - j; k > 0; k--)
-            ((allocator_type&)_alloc).construct(tmp + i++, *(_begin + j++));
-        ((allocator_type&)_alloc).deallocate(_begin, _capacity);
-        _begin = tmp;
-        if ((_capacity * 2) - _size >= n)
-            _capacity *= 2;
-        else
-            _capacity += n;
+        _size += n;
     }
-    else
-    {
-        while(_begin + i != position.base() && i != _size)
-            i++;
-        j = _size + n;
-        k = _size - i;
-        while (k > 0)
-            ((allocator_type&)_alloc).construct(_begin + j, *(_begin + j - n));
-        for (j = n; j > 0; j--)
-        {
-            ((allocator_type&)_alloc).construct(_begin + i++, (*first));
-            first++;
-        }
-    }
-    _size += n;
 }
 template <class T, class Alloc>
 typename Vector<T, Alloc>::iterator Vector<T, Alloc>::erase(iterator position)
@@ -644,7 +652,7 @@ void Vector<T, Alloc>::push_back(const value_type& val)
 template <class T, class Alloc>
 void Vector<T, Alloc>::pop_back()
 {
-    erase(end());
+    erase(end() - 1);
 }
 template <class T, class Alloc>
 void Vector<T, Alloc>::swap(Vector& x)
@@ -662,13 +670,9 @@ void Vector<T, Alloc>::swap(Vector& x)
 template <class T, class Alloc>
 void Vector<T, Alloc>::clear()
 {
-    if (_begin)
-    {
-        ((allocator_type&)_alloc).deallocate(_begin, _capacity);
-        _begin = NULL;
-        _capacity = 0;
-        _size = 0;
-    }
+    for (size_type i = 0; i < _size; i++)
+        ((allocator_type&)_alloc).destroy(_begin + i);
+    _size = 0;
 }
 template <class T, class Alloc>
 void swap (ft::Vector<T,Alloc>& x, ft::Vector<T,Alloc>& y)

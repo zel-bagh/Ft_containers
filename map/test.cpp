@@ -29,63 +29,60 @@ template<class T>
 struct enable_if<true, T> { typedef T type; };
 int main()
 {
-    {
-        /*------------------ std::vectors ---------------------*/
-        std::vector<std::string> v1(10, "string2");
-        std::vector<char> v2;
-        /*------------------ std::vectors ---------------------*/
-        ft::Vector<std::string> ft_v1(10, "string2");
-        ft::Vector<char> ft_v2;
-        /*
-         * Strings to store the results
+/*
+         * strings to store the resutls
          */
-        std::string s1, s2, s3, ft_s1, ft_s2, ft_s3;
+        std::string str, ft_str;
         /*
-         * Var to store the size and the capacity
+         * var to store the size and the capacity
          */
-        size_t z1, z2, z3, ft_z1, ft_z2, ft_z3;
-        size_t c1, c2, c3, ft_c1, ft_c2, ft_c3;
-        // test for n greater than the vector capactiy
-        v1.assign(20, "assign");
-        ft_v1.assign(20, "assign");
-exit(1);
-        z1 = v1.size();
-        ft_z1 = ft_v1.size();
-        c1 = v1.capacity();
-        ft_c1 = ft_v1.capacity();
-        for (size_t i = 0; i < v1.size(); ++i)
-            s1 += v1.at(i);
+        ft::Vector<std::string>::size_type s, ft_s;
+        ft::Vector<std::string>::size_type c, ft_c;
+        /*
+         * bool to store the comparison
+         */
+        bool cond = 1;
+        {
+            std::vector<std::string> v1(3, "hello");
+            std::vector<std::string> v(3, "string");
+            ft::Vector<std::string> ft_v(3, "string");
+            ft::Vector<std::string>::iterator valid_it;
 
-        for (size_t i = 0; i < ft_v1.size(); ++i)
-            ft_s1 += ft_v1.at(i);
-        // test for n lesser than the vector capactiy
-        v1.assign(10, "less");
-        ft_v1.assign(10, "less");
+            v.reserve(6);
+            ft_v.reserve(6);
+            valid_it = ft_v.begin();
+            v.insert(v.begin() + 1, v1.begin(), v1.end());
+            ft_v.insert(ft_v.begin() + 1, v1.begin(), v1.end());
 
-        z2 = v1.size();
-        ft_z2 = ft_v1.size();
-        c2 = v1.capacity();
-        ft_c2 = ft_v1.capacity();
-        for (size_t i = 0; i < v1.size(); ++i)
-            s3 += v1.at(i);
-
-        for (size_t i = 0; i < ft_v1.size(); ++i)
-            ft_s3 += ft_v1.at(i);
-        // test for empty vectors
-        v2.assign(20, 'h');
-        ft_v2.assign(20, 'h');
-
-        z3 = v2.size();
-        ft_z3 = ft_v2.size();
-        c3 = v2.capacity();
-        ft_c3 = ft_v2.capacity();
-        for (size_t i = 0; i < v2.size(); ++i)
-            s2 += v2.at(i);
-
-        for (size_t i = 0; i < ft_v2.size(); ++i)
-            ft_s2 += ft_v2.at(i);
-
-        if((s1 == ft_s1 && z1 == ft_z1 && c1 == ft_c1) && (s2 == ft_s2 && z2 == ft_z2 && c2 == ft_c2) && (s3 == ft_s3 && z3 == ft_z3 && c3 == ft_c3))
-        std::cout << "here" << std::endl;
-    }
+            str.clear();
+            ft_str.clear();
+            s = v.size();
+            ft_s = ft_v.size();
+            c = v.capacity();
+            ft_c = ft_v.capacity();
+            std::cout << s << " " << ft_s << " " << c << " " << ft_c << std::endl;
+            for (size_t i = 0; i < v.size(); ++i)
+            {
+                
+                // if (i == 14 || i == 15)
+                // {
+                //     std::cout << "==="<< std::endl;
+                //     std::cout << v[i] << std::endl;
+                // }
+                str += v[i];
+            }
+            // std::cout << str << std::endl;
+            for (size_t i = 0; i < ft_v.size(); ++i)
+            {
+                // if (i == 14 || i == 15)
+                // {
+                //     std::cout << "==="<< std::endl;
+                //     std::cout << ft_v[i] << std::endl;
+                // }
+                ft_str += ft_v[i];
+            }
+            std::cout << "====" << std::endl << str << std::endl << ft_str << std::endl;
+            // std::cout << (str == ft_str) << std::endl;
+            // std::cout << (cond && (str == ft_str) && (s == ft_s) && (c == ft_c) && (&(*valid_it) == &(*ft_v.begin())));
+        }
 }
