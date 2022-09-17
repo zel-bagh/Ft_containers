@@ -417,8 +417,11 @@ typename Vector<T, Alloc>::iterator Vector<T, Alloc>::insert(typename Vector<T, 
         _size += 1;
         return iterator((_begin + j));
     }
-    while(_begin + i != position.base() && i != _size)
-        i++;
+    if (!(position.base() > _begin + _size - 1 && position.base() < _begin) )
+        while(_begin + i != position.base())
+            i++;
+    else
+        i = _size;
     j = _size + 1;
     while (--j > i)
         ((allocator_type&)_alloc).construct(_begin + j, *(_begin + j - 1));
@@ -464,8 +467,11 @@ void Vector<T, Alloc>::insert(typename Vector<T, Alloc>::iterator position,typen
         }
         else
         {
-            while(_begin + i != position.base() && i != _size)
-                i++;
+            if (!(position.base() > _begin + _size - 1 && position.base() < _begin) )
+                while(_begin + i != position.base())
+                    i++;
+            else
+                i = _size;
             j = _size + n - 1;
             k = _size - i + 1;
             while (--k > 0)
@@ -528,8 +534,11 @@ void Vector<T, Alloc>::insert (typename Vector<T, Alloc>::iterator position, Inp
         }
         else
         {
-            while(_begin + i != position.base() && i != _size)
-                i++;
+            if (!(position.base() > _begin + _size - 1 && position.base() < _begin) )
+                while(_begin + i != position.base())
+                    i++;
+            else
+                i = _size;
             j = _size + n - 1;
             k = _size - i + 1;
             while (--k > 0)
@@ -551,9 +560,9 @@ typename Vector<T, Alloc>::iterator Vector<T, Alloc>::erase(iterator position)
 {
     size_type i = 0;
     size_type j;
-    if (_begin)
+    if (_begin && position.base() >= _begin && position.base() <= _begin + _size - 1)
     {
-        while (_begin + i != position.base() && i != _size)
+        while (_begin + i != position.base())
             i++;
         if (i != _size)
         {
@@ -573,7 +582,7 @@ typename Vector<T, Alloc>::iterator Vector<T, Alloc>::erase(iterator first, iter
 {
     size_type i = 0;
     size_type j;
-    if (_begin)
+    if (_begin && first.base() >= _begin && first.base() <= _begin + _size - 1)
     {
         while (_begin + i != first.base() && i != _size)
             i++;
