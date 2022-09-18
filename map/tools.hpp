@@ -114,6 +114,7 @@ namespace ft
         const_iterator(const iterator_type& obj){it = obj;}
         ~const_iterator(void){};
         public:
+        iterator_type base() const {return it;} 
         const_iterator& operator=(const const_iterator& obj){it = obj.it; return *this;}
         const pointer     operator->(void) const {return (&(*it));}
         const reference   operator*(void) const {return (*it);}

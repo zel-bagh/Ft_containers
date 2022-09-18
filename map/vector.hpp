@@ -74,6 +74,7 @@ class Vector
         _size = x._size;
         _capacity = x._size;
     }
+    ~Vector() {if (_begin) _alloc.deallocate(_begin, _capacity);}
     public:
     Vector& operator=(const Vector& x)
     {
@@ -564,16 +565,14 @@ typename Vector<T, Alloc>::iterator Vector<T, Alloc>::erase(iterator position)
     {
         while (_begin + i != position.base())
             i++;
-        if (i != _size)
-        {
-            ((allocator_type&)_alloc).destroy(_begin + i);
-            _size -= 1;
-            j = i;
-            i--;
-            while (++i < _size - 1)
-                ((allocator_type&)_alloc).construct(_begin + i, *(_begin + i + 1));
-            return (iterator(_begin + j));
-        }
+        ((allocator_type&)_alloc).destroy(_begin + i);
+        j = i;
+        i--;
+        while (++i < _size - 1)
+            ((allocator_type&)_alloc).construct(_begin + i, *(_begin + i + 1));
+        _size -= 1;
+        return (iterator(_begin + j));
+
     }
     return iterator(NULL);
 }
@@ -584,19 +583,16 @@ typename Vector<T, Alloc>::iterator Vector<T, Alloc>::erase(iterator first, iter
     size_type j;
     if (_begin && first.base() >= _begin && first.base() <= _begin + _size - 1)
     {
-        while (_begin + i != first.base() && i != _size)
+        while (_begin + i != first.base())
             i++;
-        if (i != _size)
-        {
-            j = i;
-            while (_begin + i != last.base() && i != _size)
-                ((allocator_type&)_alloc).destroy(_begin + i++);
-            if (j != i)
-                while (i < _size)
-                    ((allocator_type&)_alloc).construct(_begin + j++, *(_begin + i++));
-            _size -= i - j;
-            return iterator(first.base());
-        }
+        j = i;
+        while (_begin + i != last.base() && i != _size)
+            ((allocator_type&)_alloc).destroy(_begin + i++);
+        if (j != i)
+            while (i < _size)
+                ((allocator_type&)_alloc).construct(_begin + j++, *(_begin + i++));
+        _size -= i - j;
+        return iterator(first.base());
     }
     return iterator(NULL);
 }
@@ -661,7 +657,7 @@ void Vector<T, Alloc>::push_back(const value_type& val)
 template <class T, class Alloc>
 void Vector<T, Alloc>::pop_back()
 {
-    erase(end() - 1);
+    erase(--end());
 }
 template <class T, class Alloc>
 void Vector<T, Alloc>::swap(Vector& x)
