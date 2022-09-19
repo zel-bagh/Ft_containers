@@ -2,10 +2,10 @@
 #define RED_BLACK_TREE
 #include<functional>
 #include <stdexcept> 
-#include "tools.hpp"
+#include "../tools.hpp"
 #include <iterator>
 #include <iostream>
-#include "pair.hpp"
+#include "../pair.hpp"
 template <class Key, class T, class Key_Compare, class Alloc>
 class RBT
 {
@@ -96,7 +96,7 @@ class RBT
                     this->to_begin = to_begin;
                     this->to_end = to_end;
                 }
-                iterator(const const_iterator& c_it) {*this = c_it.base();}
+                iterator(const ft::const_iterator<iterator>& c_it) {*this = c_it.base();}
                 iterator(const iterator& obj) {*this = obj;}
                 ~iterator(void){}
             public:
