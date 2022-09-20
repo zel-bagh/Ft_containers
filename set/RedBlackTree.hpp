@@ -68,7 +68,15 @@ class RBT
             public:
                 const RBTNode& operator=(const RBTNode& obj)
                 {
-                    (void)obj;
+                    Alloc allocator;
+                    value = allocator.allocate(1);
+                    allocator.construct(value, *(obj.value));
+                    is_black = obj.is_black;
+                    is_begin = obj.is_begin;
+                    is_end = obj.is_end;
+                    right_child = obj.right_child;
+                    left_child = obj.left_child;
+                    parent = obj.parent;
                     return *this;
                 }
         };
@@ -121,6 +129,7 @@ class RBT
                 bool    operator!=(const iterator& obj) const;
         };
     public:
+        typedef typename Alloc::template rebind<RBTNode>::other node_alloc;
         typedef typename ft::const_iterator<iterator>           const_iterator;
         typedef typename ft::reverse_iterator<iterator>         reverse_iterator;
         typedef typename ft::const_iterator<reverse_iterator>   const_reverse_iterator;
@@ -170,6 +179,7 @@ class RBT
         RBTNode* _end;
         Key_Compare compare;
         size_type   _size;
+        node_alloc  alloc;
 };
 
 //Iterator functions=================================================================================================>
@@ -610,7 +620,8 @@ ft::pair<typename RBT<Key_Compare, Alloc>::iterator, bool> RBT<Key_Compare, Allo
     if (root_node == NULL)
     {
         _size++;
-        root_node = new RBTNode(value, NULL, 1);
+        root_node = alloc.allocate(1);
+        alloc.construct(root_node, RBTNode(value, NULL, 1));
         root_node->is_end = 1;
         root_node->is_begin = 1;
         _end = root_node;
@@ -626,7 +637,8 @@ ft::pair<typename RBT<Key_Compare, Alloc>::iterator, bool> RBT<Key_Compare, Allo
             {
                 if (node->left_child == NULL)
                 {
-                    node->left_child = new RBTNode(value, node, 0);
+                    node->left_child = alloc.allocate(1);
+                    alloc.construct(node->left_child, RBTNode(value, node, 0));
                     node = node->left_child;
                     break ;
                 }
@@ -636,7 +648,8 @@ ft::pair<typename RBT<Key_Compare, Alloc>::iterator, bool> RBT<Key_Compare, Allo
             {
                 if (node->right_child == NULL)
                 {
-                    node->right_child = new RBTNode(value, node, 0);
+                    node->right_child = alloc.allocate(1);
+                    alloc.construct(node->right_child, RBTNode(value, node, 0));
                     node = node->right_child;
                     break ;
                 }
@@ -797,7 +810,7 @@ void RBT<Key_Compare, Alloc>::erase_rednode_nochildren(RBTNode* node)
         node->parent->left_child = NULL;
     else
         node->parent->right_child = NULL;
-    delete node;
+    alloc.deallocate(node, 1);
 }
 
 
@@ -848,7 +861,7 @@ void RBT<Key_Compare, Alloc>::erase_blacknode_oneredchildren(RBTNode* node)
             node->left_child->is_black = 1;
         }     
     }
-    delete node;
+    alloc.deallocate(node, 1);
 }
 
 template <class Key_Compare, class Alloc>
@@ -868,7 +881,7 @@ void RBT<Key_Compare, Alloc>::black_node_missing_fixing(RBTNode* node, bool eras
                 if (erase)
                 {
                     parent->left_child = NULL;
-                    delete (node);
+                    alloc.deallocate(node, 1);
                 }
                 if (parent->is_black && parent->parent)
                     black_node_missing_fixing(parent, 0);
@@ -898,7 +911,7 @@ void RBT<Key_Compare, Alloc>::black_node_missing_fixing(RBTNode* node, bool eras
                 if (erase) 
                 {
                     parent->left_child = NULL;
-                    delete node;
+                    alloc.deallocate(node, 1);
                 }
             }
             else if (parent->right_child->left_child && !parent->right_child->left_child->is_black &&
@@ -948,7 +961,7 @@ void RBT<Key_Compare, Alloc>::black_node_missing_fixing(RBTNode* node, bool eras
                 if (erase)
                 {
                     parent->right_child = NULL;
-                    delete (node);
+                    alloc.deallocate(node, 1);
                 }
                 if (parent->is_black && parent->parent)
                     black_node_missing_fixing(parent, 0);
@@ -978,7 +991,7 @@ void RBT<Key_Compare, Alloc>::black_node_missing_fixing(RBTNode* node, bool eras
                 if (erase)
                 {
                     parent->right_child = NULL;
-                    delete node;
+                    alloc.deallocate(node, 1);
                 }
             }
             else if (parent->left_child->right_child && !parent->left_child->right_child->is_black &&
@@ -1042,7 +1055,7 @@ bool RBT<Key_Compare, Alloc>::erase(const value_type& k)
             root_node = NULL;
             _begin = NULL;
             _end = NULL;
-            delete node;
+            alloc.deallocate(node, 1);
         }
         else
         {
