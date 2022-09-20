@@ -1,6 +1,6 @@
 #include "../set/set.hpp"       // your Map path.
 #include "../vector/vector.hpp" // your Vector path.
-#include "..//pair.hpp"  // path to ft::pair.
+#include "../pair.hpp"  // path to ft::pair.
 // #include "map-test-helper.hpp"
 #include <set>
 
@@ -1967,144 +1967,144 @@ void testAllocatorMethodes()
         mymap.get_allocator().deallocate(p, 5);
     }
 }
-// void testRetionalOperators()
-// {
+void testRetionalOperators()
+{
 
-//     /* ---------------  pretty simple tests --------------- */
-//     std::set<char> foo, bar;
-//     ft::Set<char> ft_foo, ft_bar;
-//     bool res(false);
-//     bool ft_res(false);
-//     foo.insert('a');
-//     foo.insert('b');
-//     bar.insert('a');
-//     bar.insert('z');
+    /* ---------------  pretty simple tests --------------- */
+    std::set<char> foo, bar;
+    ft::Set<char> ft_foo, ft_bar;
+    bool res(false);
+    bool ft_res(false);
+    foo.insert('a');
+    foo.insert('b');
+    bar.insert('a');
+    bar.insert('z');
 
-//     ft_foo.insert('a');
-//     ft_foo.insert('b');
-//     ft_bar.insert('a');
-//     ft_bar.insert('z');
+    ft_foo.insert('a');
+    ft_foo.insert('b');
+    ft_bar.insert('a');
+    ft_bar.insert('z');
 
-//     std::set<int> m, m1;
-//     ft::Set<int> ft_m, ft_m1;
-//     for (size_t i = 0; i < 1e6; ++i)
-//     {
-//         m.insert(i);
-//         ft_m.insert(i);
-//     }
-//     for (size_t i = 0; i < 1e6; ++i)
-//     {
-//         m1.insert(i + 1);
-//         ft_m1.insert(i + 1);
-//     }
+    std::set<int> m, m1;
+    ft::Set<int> ft_m, ft_m1;
+    for (size_t i = 0; i < 1e6; ++i)
+    {
+        m.insert(i);
+        ft_m.insert(i);
+    }
+    for (size_t i = 0; i < 1e6; ++i)
+    {
+        m1.insert(i + 1);
+        ft_m1.insert(i + 1);
+    }
 
-//     std::cout << "\t\033[1;37m[-------------------- [" << std::setw(40) << std::left << " operator == "
-//               << "] --------------------]\t\t\033[0m";
-//     /*---------------------------------- time limit test --------------------------------------------*/
-//     {
-//         time_t start, end, diff;
-//         start = get_time();
-//         res = m == m1;
-//         end = get_time();
-//         diff = end - start;
-//         diff = (diff) ? (diff * TIME_FAC) : TIME_FAC;
+    std::cout << "\t\033[1;37m[-------------------- [" << std::setw(40) << std::left << " operator == "
+              << "] --------------------]\t\t\033[0m";
+    /*---------------------------------- time limit test --------------------------------------------*/
+    {
+        time_t start, end, diff;
+        start = get_time();
+        res = m == m1;
+        end = get_time();
+        diff = end - start;
+        diff = (diff) ? (diff * TIME_FAC) : TIME_FAC;
 
-//         ualarm(diff * 1e3, 0);
-//         ft_res = ft_m == ft_m1;
-//         ualarm(0, 0);
-//     }
+        ualarm(diff * 1e3, 0);
+        ft_res = ft_m == ft_m1;
+        ualarm(0, 0);
+    }
 
-//     EQUAL(((foo == bar) == (ft_foo == ft_bar)) && res == ft_res);
+    EQUAL(((foo == bar) == (ft_foo == ft_bar)) && res == ft_res);
 
-//     std::cout << "\t\033[1;37m[-------------------- [" << std::setw(40) << std::left << " operator != "
-//               << "] --------------------]\t\t\033[0m";
-//     /*---------------------------------- time limit test --------------------------------------------*/
-//     {
-//         time_t start, end, diff;
+    std::cout << "\t\033[1;37m[-------------------- [" << std::setw(40) << std::left << " operator != "
+              << "] --------------------]\t\t\033[0m";
+    /*---------------------------------- time limit test --------------------------------------------*/
+    {
+        time_t start, end, diff;
 
-//         start = get_time();
-//         res = m != m1;
-//         end = get_time();
-//         diff = end - start;
-//         diff = (diff) ? (diff * TIME_FAC) : TIME_FAC;
+        start = get_time();
+        res = m != m1;
+        end = get_time();
+        diff = end - start;
+        diff = (diff) ? (diff * TIME_FAC) : TIME_FAC;
 
-//         ualarm(diff * 1e3, 0);
-//         ft_res = ft_m != ft_m1;
-//         ualarm(0, 0);
-//     }
-//     EQUAL((foo != bar) == (ft_foo != ft_bar) && res == ft_res);
+        ualarm(diff * 1e3, 0);
+        ft_res = ft_m != ft_m1;
+        ualarm(0, 0);
+    }
+    EQUAL((foo != bar) == (ft_foo != ft_bar) && res == ft_res);
 
-//     std::cout << "\t\033[1;37m[-------------------- [" << std::setw(40) << std::left << " operator > "
-//               << "] --------------------]\t\t\033[0m";
-//     /*---------------------------------- time limit test --------------------------------------------*/
-//     {
-//         time_t start, end, diff;
-//         start = get_time();
-//         res = m > m1;
-//         end = get_time();
-//         diff = end - start;
-//         diff = (diff) ? (diff * TIME_FAC) : TIME_FAC;
+    std::cout << "\t\033[1;37m[-------------------- [" << std::setw(40) << std::left << " operator > "
+              << "] --------------------]\t\t\033[0m";
+    /*---------------------------------- time limit test --------------------------------------------*/
+    {
+        time_t start, end, diff;
+        start = get_time();
+        res = m > m1;
+        end = get_time();
+        diff = end - start;
+        diff = (diff) ? (diff * TIME_FAC) : TIME_FAC;
 
-//         ualarm(diff * 1e3, 0);
-//         ft_res = ft_m > ft_m1;
-//         ualarm(0, 0);
-//     }
-//     EQUAL(((foo > bar) == (ft_foo > ft_bar)) && (res == ft_res));
+        ualarm(diff * 1e3, 0);
+        ft_res = ft_m > ft_m1;
+        ualarm(0, 0);
+    }
+    EQUAL(((foo > bar) == (ft_foo > ft_bar)) && (res == ft_res));
 
-//     std::cout << "\t\033[1;37m[-------------------- [" << std::setw(40) << std::left << " operator >= "
-//               << "] --------------------]\t\t\033[0m";
-//     /*---------------------------------- time limit test --------------------------------------------*/
-//     {
-//         time_t start, end, diff;
+    std::cout << "\t\033[1;37m[-------------------- [" << std::setw(40) << std::left << " operator >= "
+              << "] --------------------]\t\t\033[0m";
+    /*---------------------------------- time limit test --------------------------------------------*/
+    {
+        time_t start, end, diff;
 
-//         start = get_time();
-//         res = m >= m1;
-//         end = get_time();
-//         diff = end - start;
-//         diff = (diff) ? (diff * TIME_FAC) : TIME_FAC;
+        start = get_time();
+        res = m >= m1;
+        end = get_time();
+        diff = end - start;
+        diff = (diff) ? (diff * TIME_FAC) : TIME_FAC;
 
-//         ualarm(diff * 1e3, 0);
-//         ft_res = ft_m >= ft_m1;
-//         ualarm(0, 0);
-//     }
-//     EQUAL(((foo >= bar) == (ft_foo >= ft_bar)) && (res == ft_res));
+        ualarm(diff * 1e3, 0);
+        ft_res = ft_m >= ft_m1;
+        ualarm(0, 0);
+    }
+    EQUAL(((foo >= bar) == (ft_foo >= ft_bar)) && (res == ft_res));
 
-//     std::cout << "\t\033[1;37m[-------------------- [" << std::setw(40) << std::left << " operator < "
-//               << "] --------------------]\t\t\033[0m";
-//     /*---------------------------------- time limit test --------------------------------------------*/
-//     {
-//         time_t start, end, diff;
+    std::cout << "\t\033[1;37m[-------------------- [" << std::setw(40) << std::left << " operator < "
+              << "] --------------------]\t\t\033[0m";
+    /*---------------------------------- time limit test --------------------------------------------*/
+    {
+        time_t start, end, diff;
 
-//         start = get_time();
-//         res = m < m1;
-//         end = get_time();
-//         diff = end - start;
-//         diff = (diff) ? (diff * TIME_FAC) : TIME_FAC;
+        start = get_time();
+        res = m < m1;
+        end = get_time();
+        diff = end - start;
+        diff = (diff) ? (diff * TIME_FAC) : TIME_FAC;
 
-//         ualarm(diff * 1e3, 0);
-//         ft_res = ft_m < ft_m1;
-//         ualarm(0, 0);
-//     }
-//     EQUAL(((foo < bar) == (ft_foo < ft_bar)) && (res == ft_res));
+        ualarm(diff * 1e3, 0);
+        ft_res = ft_m < ft_m1;
+        ualarm(0, 0);
+    }
+    EQUAL(((foo < bar) == (ft_foo < ft_bar)) && (res == ft_res));
 
-//     std::cout << "\t\033[1;37m[-------------------- [" << std::setw(40) << std::left << " operator <= "
-//               << "] --------------------]\t\t\033[0m";
-//     /*---------------------------------- time limit test --------------------------------------------*/
-//     {
-//         time_t start, end, diff;
+    std::cout << "\t\033[1;37m[-------------------- [" << std::setw(40) << std::left << " operator <= "
+              << "] --------------------]\t\t\033[0m";
+    /*---------------------------------- time limit test --------------------------------------------*/
+    {
+        time_t start, end, diff;
 
-//         start = get_time();
-//         res = m <= m1;
-//         end = get_time();
-//         diff = end - start;
-//         diff = (diff) ? (diff * TIME_FAC) : TIME_FAC;
+        start = get_time();
+        res = m <= m1;
+        end = get_time();
+        diff = end - start;
+        diff = (diff) ? (diff * TIME_FAC) : TIME_FAC;
 
-//         ualarm(diff * 1e3, 0);
-//         ft_res = ft_m <= ft_m1;
-//         ualarm(0, 0);
-//     }
-//     EQUAL(((foo <= bar) == (ft_foo <= ft_bar)) && (res == ft_res));
-// }
+        ualarm(diff * 1e3, 0);
+        ft_res = ft_m <= ft_m1;
+        ualarm(0, 0);
+    }
+    EQUAL(((foo <= bar) == (ft_foo <= ft_bar)) && (res == ft_res));
+}
 
 void alarm_handler(int seg)
 {
@@ -2155,12 +2155,13 @@ int main()
     TEST_CASE(testAllocatorMethodes)
     std::cout << std::endl;
 
-    // std::cout << YELLOW << "Testing Retional Operators; " << RESET << std::endl;
-    // TEST_CASE(testRetionalOperators);
-    // std::cout << std::endl;
+    std::cout << YELLOW << "Testing Retional Operators; " << RESET << std::endl;
+    TEST_CASE(testRetionalOperators);
+    std::cout << std::endl;
 
     std::cout << YELLOW << "Testing Non-Member Swap  ; " << RESET << std::endl;
     TEST_CASE(testNonMemberSwap);
     std::cout << std::endl;
+    system("leaks set.out");
     return 0;
 }

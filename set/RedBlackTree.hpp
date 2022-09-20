@@ -180,6 +180,7 @@ class RBT
         Key_Compare compare;
         size_type   _size;
         node_alloc  alloc;
+        Alloc       valloc;
 };
 
 //Iterator functions=================================================================================================>
@@ -810,6 +811,7 @@ void RBT<Key_Compare, Alloc>::erase_rednode_nochildren(RBTNode* node)
         node->parent->left_child = NULL;
     else
         node->parent->right_child = NULL;
+    valloc.deallocate(node->value, 1);
     alloc.deallocate(node, 1);
 }
 
@@ -861,6 +863,7 @@ void RBT<Key_Compare, Alloc>::erase_blacknode_oneredchildren(RBTNode* node)
             node->left_child->is_black = 1;
         }     
     }
+    valloc.deallocate(node->value, 1);
     alloc.deallocate(node, 1);
 }
 
@@ -881,6 +884,7 @@ void RBT<Key_Compare, Alloc>::black_node_missing_fixing(RBTNode* node, bool eras
                 if (erase)
                 {
                     parent->left_child = NULL;
+                    valloc.deallocate(node->value, 1);
                     alloc.deallocate(node, 1);
                 }
                 if (parent->is_black && parent->parent)
@@ -911,6 +915,7 @@ void RBT<Key_Compare, Alloc>::black_node_missing_fixing(RBTNode* node, bool eras
                 if (erase) 
                 {
                     parent->left_child = NULL;
+                    valloc.deallocate(node->value, 1);
                     alloc.deallocate(node, 1);
                 }
             }
@@ -961,6 +966,7 @@ void RBT<Key_Compare, Alloc>::black_node_missing_fixing(RBTNode* node, bool eras
                 if (erase)
                 {
                     parent->right_child = NULL;
+                    valloc.deallocate(node->value, 1);
                     alloc.deallocate(node, 1);
                 }
                 if (parent->is_black && parent->parent)
@@ -991,6 +997,7 @@ void RBT<Key_Compare, Alloc>::black_node_missing_fixing(RBTNode* node, bool eras
                 if (erase)
                 {
                     parent->right_child = NULL;
+                    valloc.deallocate(node->value, 1);
                     alloc.deallocate(node, 1);
                 }
             }
@@ -1055,6 +1062,7 @@ bool RBT<Key_Compare, Alloc>::erase(const value_type& k)
             root_node = NULL;
             _begin = NULL;
             _end = NULL;
+            valloc.deallocate(node->value, 1);
             alloc.deallocate(node, 1);
         }
         else

@@ -74,7 +74,15 @@ class Vector
         _size = x._size;
         _capacity = x._size;
     }
-    ~Vector() {if (_begin) _alloc.deallocate(_begin, _capacity);}
+    ~Vector()
+    {
+        if (_begin)
+        {
+            for (size_type i = 0; i < _size; i++)
+                _alloc.destroy(_begin + i);
+            _alloc.deallocate(_begin, _capacity);
+        }
+    }
     public:
     Vector& operator=(const Vector& x)
     {
@@ -412,7 +420,11 @@ typename Vector<T, Alloc>::iterator Vector<T, Alloc>::insert(typename Vector<T, 
         ((allocator_type&)_alloc).construct(tmp + i, val);
         for (;i < _size; i++)
             ((allocator_type&)_alloc).construct(tmp + i + 1, *(_begin + i));
-        ((allocator_type&)_alloc).deallocate(_begin, _capacity);
+        {
+            for (size_type i = 0; i < _size; i++)
+                ((allocator_type&)_alloc).destroy(_begin + i);
+            ((allocator_type&)_alloc).deallocate(_begin, _capacity);
+        }
         _begin = tmp;
         _capacity *= 2;
         _size += 1;
@@ -459,7 +471,11 @@ void Vector<T, Alloc>::insert(typename Vector<T, Alloc>::iterator position,typen
             j = i - n;
             for (; j < _size; j++)
                 ((allocator_type&)_alloc).construct(tmp + i++, *(_begin + j));
-            ((allocator_type&)_alloc).deallocate(_begin, _capacity);
+            {
+                for (size_type i = 0; i < _size; i++)
+                    ((allocator_type&)_alloc).destroy(_begin + i);
+                ((allocator_type&)_alloc).deallocate(_begin, _capacity);
+            }
             _begin = tmp;
             if ((_capacity * 2) - _size >= n)
                 _capacity *= 2;
@@ -526,7 +542,11 @@ void Vector<T, Alloc>::insert (typename Vector<T, Alloc>::iterator position, Inp
             j = i - n;
             for (; j < _size; j++)
                 ((allocator_type&)_alloc).construct(tmp + i++, *(_begin + j));
-            ((allocator_type&)_alloc).deallocate(_begin, _capacity);
+            {
+                for (size_type i = 0; i < _size; i++)
+                    ((allocator_type&)_alloc).destroy(_begin + i);
+                ((allocator_type&)_alloc).deallocate(_begin, _capacity);
+            }
             _begin = tmp;
             if ((_capacity * 2) - _size >= n)
                 _capacity *= 2;
@@ -561,6 +581,7 @@ typename Vector<T, Alloc>::iterator Vector<T, Alloc>::erase(iterator position)
 {
     size_type i = 0;
     size_type j;
+    size_type k;
     if (_begin && position.base() >= _begin && position.base() <= _begin + _size - 1)
     {
         while (_begin + i != position.base())
@@ -568,8 +589,11 @@ typename Vector<T, Alloc>::iterator Vector<T, Alloc>::erase(iterator position)
         ((allocator_type&)_alloc).destroy(_begin + i);
         j = i;
         i--;
+        k = (i == _size - 1) ? 0 : 1;
         while (++i < _size - 1)
             ((allocator_type&)_alloc).construct(_begin + i, *(_begin + i + 1));
+        if (k)
+            ((allocator_type&)_alloc).destroy(_begin + _size - 1);
         _size -= 1;
         return (iterator(_begin + j));
 
@@ -581,6 +605,7 @@ typename Vector<T, Alloc>::iterator Vector<T, Alloc>::erase(iterator first, iter
 {
     size_type i = 0;
     size_type j;
+    size_type k;
     if (_begin && first.base() >= _begin && first.base() <= _begin + _size - 1)
     {
         while (_begin + i != first.base())
@@ -589,8 +614,16 @@ typename Vector<T, Alloc>::iterator Vector<T, Alloc>::erase(iterator first, iter
         while (_begin + i != last.base() && i != _size)
             ((allocator_type&)_alloc).destroy(_begin + i++);
         if (j != i)
+        {
+            if (i != _size)
+                k = _size - (i - j);
+            else
+                k = _size;
             while (i < _size)
                 ((allocator_type&)_alloc).construct(_begin + j++, *(_begin + i++));
+            while (k < _size)
+                ((allocator_type&)_alloc).destroy(_begin + k++);
+        }
         _size -= i - j;
         return iterator(first.base());
     }
