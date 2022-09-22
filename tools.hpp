@@ -147,7 +147,7 @@ namespace ft
         }
 
         friend bool operator== (const const_iterator& lhs,
-                       const const_iterator& rhs) {std::cout << "here ba" << std::endl; return (lhs.it == rhs.it);}
+                       const const_iterator& rhs) {return (lhs.it == rhs.it);}
         friend bool operator!= (const const_iterator& lhs,
                        const const_iterator& rhs) {return (lhs.it != rhs.it);}
         friend bool operator<  (const const_iterator& lhs,

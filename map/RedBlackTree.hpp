@@ -133,16 +133,21 @@ class RBT
         typedef typename ft::reverse_iterator<iterator>         reverse_iterator;
         typedef typename ft::const_iterator<reverse_iterator>   const_reverse_iterator;
     public:
-        class value_compare
+    class value_compare
+    {
+        friend class RBT;
+        protected:
+        Key_Compare comp;
+        value_compare (Key_Compare c) : comp(c) {}
+        public:
+        typedef bool result_type;
+        typedef value_type first_argument_type;
+        typedef value_type second_argument_type;
+        bool operator() (const value_type& x, const value_type& y) const
         {
-            private:
-               Key_Compare comp;
-            public:
-              bool operator() (const value_type& x, const value_type& y) const
-              {
-                return comp(x.first, y.first);
-              }
-        };
+            return comp(x.first, y.first);
+        }
+    };
     public: //Modifiers:
         ft::pair<iterator, bool> insert(const value_type& value);
         iterator insert (iterator position, const value_type& val); 
@@ -383,48 +388,18 @@ T& RBT<Key, T, Key_Compare, Alloc>::operator[](const Key& k)
     return ((*(insert(value_type(k, value)).first)).second);
 }
 
-// template <class Key, class T, class Key_Compare, class Alloc>
-// T& RBT<Key, T, Key_Compare, Alloc>::at(const Key& k)
-// {
-//     iterator it = begin();
-//     iterator en = end();
-    
-//     while (it != en)
-//     {
-//         if (compare((*it).first, k) == 0 && compare(k, (*it).first) == 0)
-//             return ((*it).second);
-//         it++;
-//     }
-//     throw (std::out_of_range("key not found"));
-// }
-
-// template <class Key, class T, class Key_Compare, class Alloc>
-// const T& RBT<Key, T, Key_Compare, Alloc>::at(const Key& k) const
-// {
-//     iterator it = begin();
-//     iterator en = end();
-    
-//     while (it != en)
-//     {
-//         if (compare((*it).first, k) == 0 && compare(k, (*it).first) == 0)
-//             return ((*it).second);
-//         it++;
-//     }
-//     throw (std::out_of_range("key not found"));
-// }
-
 //Observers==============================================================================================================================>
 
 template <class Key, class T, class Key_Compare, class Alloc>
 Key_Compare RBT<Key, T, Key_Compare, Alloc>::key_comp(void) const
 {
-    return (Key_Compare());
+    return (compare);
 }
 
 template <class Key, class T, class Key_Compare, class Alloc>
 typename RBT<Key, T, Key_Compare, Alloc>::value_compare RBT<Key, T, Key_Compare, Alloc>::value_comp() const
 {
-    return (value_compare());
+    return (value_compare(compare));
 }
 
 //Operations==============================================================================================================================>

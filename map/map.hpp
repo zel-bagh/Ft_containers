@@ -143,7 +143,6 @@ template <class Key, class T, class Compare = std::less<Key>, class Alloc = std:
     template< class Key, class T, class Compare, class Alloc >
     bool operator>=( const ft::Map<Key,T,Compare,Alloc>& lhs, const ft::Map<Key,T,Compare,Alloc>& rhs )
     { return (!ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end())); }
-
 }
 
 #endif

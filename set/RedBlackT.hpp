@@ -162,6 +162,8 @@ class RBT_S
         const_reverse_iterator rbegin() const;
         reverse_iterator rend();
         const_reverse_iterator rend() const;
+    public:
+        Key_Compare key_comp() const;
     public: //capacity
         bool empty() const;
         size_type size() const;
@@ -561,6 +563,12 @@ template <class Key_Compare, class Alloc>
 ft::pair<typename RBT_S<Key_Compare, Alloc>::const_iterator,typename RBT_S<Key_Compare, Alloc>::const_iterator> RBT_S<Key_Compare, Alloc>::equal_range(const value_type& k) const
 {
     return (ft::pair<const_iterator, const_iterator> (lower_bound(k), upper_bound(k)));
+}
+
+template <class Key_Compare, class Alloc>
+Key_Compare RBT_S<Key_Compare, Alloc>::key_comp(void) const
+{
+    return (compare);
 }
 
 //Modifiers==============================================================================================================================>

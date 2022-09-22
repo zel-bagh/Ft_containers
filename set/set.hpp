@@ -91,8 +91,8 @@ template <class T, class Compare = std::less<T>, class Alloc = std::allocator<T>
             size_type max_size() const { return _tree.max_size(); }
 
             //Observers:
-            key_compare key_comp() const { return key_compare(); }
-            value_compare value_comp() const {return key_compare();}
+            key_compare key_comp() const { return _tree.key_comp(); }
+            value_compare value_comp() const {return _tree.key_comp();}
 
             //Operations:
             iterator find (const key_type& k)
