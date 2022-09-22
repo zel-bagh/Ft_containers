@@ -17,7 +17,6 @@ namespace ft
         container_type c;
         public:
         explicit Stack (const container_type& ctnr = container_type()) : c(ctnr){}
-        ~Stack(){}
         bool empty() const {return c.empty();}
         size_type size() const {return c.size();}
         value_type& top() {return c.back();}

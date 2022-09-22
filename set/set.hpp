@@ -1,7 +1,7 @@
 #ifndef SET_HPP
 # define SET_HPP
 
-#include"RedBlackTree.hpp"
+#include"RedBlackT.hpp"
 
 namespace ft
 {
@@ -18,11 +18,11 @@ template <class T, class Compare = std::less<T>, class Alloc = std::allocator<T>
             typedef typename allocator_type::const_reference                            const_reference;
             typedef typename allocator_type::pointer                                    pointer;
             typedef typename allocator_type::const_pointer                              const_pointer;
-            typedef RBT<key_compare, allocator_type>                                    RBT;
-            typedef typename RBT::iterator                                              iterator;
-            typedef typename RBT::const_iterator                                        const_iterator;
-            typedef typename RBT::reverse_iterator                                      reverse_iterator;
-            typedef typename RBT::const_reverse_iterator                                const_reverse_iterator;
+            typedef RBT_S<key_compare, allocator_type>                                    RBT_S;
+            typedef typename RBT_S::iterator                                              iterator;
+            typedef typename RBT_S::const_iterator                                        const_iterator;
+            typedef typename RBT_S::reverse_iterator                                      reverse_iterator;
+            typedef typename RBT_S::const_reverse_iterator                                const_reverse_iterator;
             typedef std::ptrdiff_t                                                      difference_type;
             typedef size_t                                                              size_type;
 
@@ -116,7 +116,7 @@ template <class T, class Compare = std::less<T>, class Alloc = std::allocator<T>
             //Allocator:
             allocator_type get_allocator() const { return Alloc(); }
         private:
-            RBT _tree;
+            RBT_S _tree;
     };
     // relational operators
     template< class T, class Compare, class Alloc >
